@@ -6,7 +6,7 @@
     "start": "npm run copy-wasm && next start",
     "copy-wasm": "node scripts/copy-wasm.js",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d out -b main"
+    "deploy": "gh-pages -d out -b gh-pages"
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.5.10",
