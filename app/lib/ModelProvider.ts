@@ -6,7 +6,7 @@ let cachedModel: Model | undefined = undefined;
 const loadModel = async (): Promise<Model> => {
     try {
         console.log("Loading model");
-        const model = await createModel('/models/model-new.tar.gz');
+        const model = await createModel('models/model-new.tar.gz');
         console.log("Model initialized");
         cachedModel = model;
         return model;

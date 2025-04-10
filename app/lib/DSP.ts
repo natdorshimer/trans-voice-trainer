@@ -18,7 +18,7 @@ export async function getEssentia(): Essentia {
     }
     try {
         const wasm = await EssentiaWASM({
-            locateFile: () => '/essentia-wasm.web.wasm'
+            locateFile: () => 'essentia-wasm.web.wasm'
         });
         essentia = new Essentia(wasm);
         return essentia;
