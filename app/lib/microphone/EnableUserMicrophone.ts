@@ -19,7 +19,7 @@ export const enableUserMicrophone = async (
     const audioCtx = new AudioContext({sampleRate: settings.sampleRate})
     console.log(`sample rate: ${audioCtx.sampleRate}`)
 
-    await audioCtx.audioWorklet.addModule('/audio/recorder-processor.js')
+    await audioCtx.audioWorklet.addModule('audio/recorder-processor.js')
 
     const streamSource = audioCtx.createMediaStreamSource(stream)
     const analyserNode = audioCtx.createAnalyser()
