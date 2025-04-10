@@ -1,0 +1,54 @@
+'use client';
+
+import {MicrophoneProvider} from "@/app/providers/MicrophoneProvider";
+import {HeatmapSettingsProvider} from "@/app/providers/HeatmapSettingsProvider";
+import {useSpectrogram} from "@/app/stores/spectrogram/SpectrogramStore";
+import React from "react";
+import {UpdatingHeatmap} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
+import {Controls} from "@/app/ui/spectrogram/controls/Controls";
+import {AnalyzeRecording} from "@/app/ui/spectrogram/AnalyzeRecording";
+
+const Spectrogram = () => {
+    const {containerRef, ...heatmapProps} = useSpectrogram()
+
+    return (
+        <div ref={containerRef} className="w-full">
+            <UpdatingHeatmap {...heatmapProps}/>
+        </div>
+    )
+}
+
+export default function Page() {
+    return (
+        <main>
+            <div>
+                <MicrophoneProvider>
+                    <HeatmapSettingsProvider>
+                        <SpecPlus/>
+                    </HeatmapSettingsProvider>
+                </MicrophoneProvider>
+            </div>
+        </main>
+    );
+};
+
+function SpecPlus() {
+    return (
+        <div className="flex flex-col">
+            <header className="App-header">
+                <div className="p-5 md:px-2 gap-3 flex flex-col items-center">
+                    <Spectrogram/>
+                </div>
+            </header>
+            <div className="p-5 md:px-2 gap-3 flex flex-row items-start"> {/* Changed to flex-row and items-start */}
+                <div className="flex-1"> {/* Controls take up available space */}
+                    <Controls/>
+                </div>
+                <div className="flex-1"> {/* Analyzer takes up available space */}
+                    <AnalyzeRecording/>
+                </div>
+            </div>
+        </div>
+    );
+}
+
