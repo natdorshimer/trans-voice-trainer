@@ -5,6 +5,9 @@ import {MaxValueSlider} from "./MaxValueSlider";
 import {SampleRateSelectionField} from "./SampleRateSelection";
 import {ToggleUserMicrophoneButton} from "./ToggleUserMicrophoneButton";
 import {FaCaretDown, FaCaretUp} from "react-icons/fa";
+import {HeatmapDisplayFrequencyControl} from "@/app/ui/spectrogram/controls/HeatmapDisplayFrequencyControl";
+import {DisableHeatmapButton} from "@/app/ui/spectrogram/controls/DisableHeatmapButton";
+import {DisableAxisButton} from "@/app/ui/spectrogram/controls/DisableAxisButton";
 
 
 export const Controls = () => {
@@ -24,14 +27,17 @@ export const Controls = () => {
                 </div>
 
                 <div className={"mt-2 ml-6"}>
+                    <ToggleUserMicrophoneButton/>
                     {isExpanded && (
                         <div>
+                            <DisableHeatmapButton/>
+                            <DisableAxisButton/>
+                            <HeatmapDisplayFrequencyControl/>
                             <MaxValueSlider/>
                             <SampleRateSelectionField/>
                             <FftSizeSelectionField/>
                         </div>
                     )}
-                    <ToggleUserMicrophoneButton/>
                 </div>
             </div>
         </div>

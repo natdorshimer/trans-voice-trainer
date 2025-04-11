@@ -1,6 +1,6 @@
 'use client';
 
-import {MicrophoneProvider} from "@/app/providers/MicrophoneProvider";
+import {MicrophoneProvider, useMicrophoneStore} from "@/app/providers/MicrophoneProvider";
 import {HeatmapSettingsProvider} from "@/app/providers/HeatmapSettingsProvider";
 import {useSpectrogram} from "@/app/stores/spectrogram/SpectrogramStore";
 import React from "react";
@@ -8,15 +8,39 @@ import {UpdatingHeatmap} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {Controls} from "@/app/ui/spectrogram/controls/Controls";
 import {AnalyzeRecording} from "@/app/ui/spectrogram/AnalyzeRecording";
 
-const Spectrogram = () => {
-    const {containerRef, ...heatmapProps} = useSpectrogram()
 
+const Spectrogram = () => {
+    const {
+        containerRef,
+        isOverlayEnabled,
+        upperFrequency,
+        formantData,
+        isHeatmapEnabled,
+        ...heatmapProps
+    } = useSpectrogram();
+    const { sampleRate, fftSize } = useMicrophoneStore(state => ({
+        sampleRate: state.sampleRate,
+        fftSize: state.fftSize,
+    }));
+
+    const frequencyResolution = sampleRate / fftSize;
     return (
-        <div ref={containerRef} className="w-full">
-            <UpdatingHeatmap {...heatmapProps}/>
+        <div ref={containerRef} className="w-full" style={{ position: 'relative' }}>
+            <UpdatingHeatmap
+                {...heatmapProps}
+                height={heatmapProps.canvasProps.height}
+                frequencyResolution={frequencyResolution}
+                sampleRate={sampleRate}
+                fftSize={fftSize}
+                disableOverlay={!isOverlayEnabled}
+                upperFrequency={upperFrequency} // Pass the upper frequency
+                formantData={formantData}
+                areFormantsVisible={isOverlayEnabled}
+            />
         </div>
-    )
-}
+    );
+};
+
 
 export default function Page() {
     return (

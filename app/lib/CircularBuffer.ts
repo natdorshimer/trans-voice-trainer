@@ -5,7 +5,7 @@
  * get(index) accesses elements relative to the oldest element (logical index 0).
  * @template T The type of elements stored in the buffer.
  */
-class CircularBuffer<T> {
+export class CircularBuffer<T> {
     /** The maximum number of elements the buffer can hold. */
     public readonly maxSize: number;
     private buffer: (T | undefined)[]; // Underlying storage, allows undefined for empty slots

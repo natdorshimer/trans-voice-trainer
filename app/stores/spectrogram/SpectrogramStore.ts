@@ -1,8 +1,9 @@
 import create from "zustand";
 import {devtools} from "zustand/middleware";
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {useMicrophoneStore} from "@/app/providers/MicrophoneProvider";
 import {useHeatmapSettings} from "@/app/stores/spectrogram/HeatmapSettingsStore";
+import {useHeatmapSettingsStore} from "@/app/providers/HeatmapSettingsProvider";
 
 export interface SpectrogramDataState {
     currentColumn: number[],
@@ -56,23 +57,34 @@ const useDivSize = () => {
     return {containerWidth, containerRef};
 }
 
+const DEFAULT_UPPER_FREQUENCY = 4096; // Default upper frequency in Hz
+
 export const useSpectrogram = () => {
     const {currentColumn} = useSpectrogramDataStore()
 
-    const microphoneState = useMicrophoneStore(state => ({
+    const {userMicrophone, micIsEnabled, fftSize, sampleRate} = useMicrophoneStore(state => ({
         userMicrophone: state.userMicrophone,
         micIsEnabled: state.userMicrophone?.enabled || false,
         fftSize: state.fftSize,
+        sampleRate: state.sampleRate
     }))
 
-    const {userMicrophone, micIsEnabled} = microphoneState
 
-    const {fftSize} = microphoneState
+    const fullHeight = userMicrophone?.analyserNode?.frequencyBinCount || fftSize / 2;
+    const frequencyResolution = sampleRate / fftSize;
 
-    const height = userMicrophone?.analyserNode?.frequencyBinCount || fftSize / 2;
+    const isOverlayEnabled = useHeatmapSettingsStore(state => state.isOverlayEnabled);
 
+    const upperFrequency = useHeatmapSettingsStore(state => state.upperFrequency);
+    // Calculate the number of frequency bins to represent the desired range
+    const visibleFrequencyBins = Math.floor(upperFrequency / frequencyResolution);
+    // const height = Math.min(fullHeight, visibleFrequencyBins);
+
+    const height = 512;
     const heatmapSettings = useHeatmapSettings()
     const {containerWidth, containerRef} = useDivSize();
+
+    const isHeatmapEnabled = useHeatmapSettingsStore(state => state.isEnabled)
 
     return {
         canvasProps: {
@@ -82,8 +94,13 @@ export const useSpectrogram = () => {
         drawData: {
             columnToDraw: currentColumn,
             shouldDraw: micIsEnabled,
+            heatmapEnabled: isHeatmapEnabled,
             heatmapSettings,
         },
-        containerRef
+        containerRef,
+        isOverlayEnabled,
+        upperFrequency,
+        formantData: userMicrophone?.currentFormants,
+        isHeatmapEnabled,
     }
 }
