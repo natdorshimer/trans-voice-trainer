@@ -1,6 +1,6 @@
 'use client';
 
-import {MicrophoneProvider} from "@/app/providers/MicrophoneProvider";
+import {MicrophoneProvider, useMicrophoneStore} from "@/app/providers/MicrophoneProvider";
 import {HeatmapSettingsProvider} from "@/app/providers/HeatmapSettingsProvider";
 import {useSpectrogram} from "@/app/stores/spectrogram/SpectrogramStore";
 import React from "react";
@@ -8,15 +8,52 @@ import {UpdatingHeatmap} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {Controls} from "@/app/ui/spectrogram/controls/Controls";
 import {AnalyzeRecording} from "@/app/ui/spectrogram/AnalyzeRecording";
 
-const Spectrogram = () => {
-    const {containerRef, ...heatmapProps} = useSpectrogram()
 
+const Spectrogram = () => {
+    const {
+        containerRef,
+        isOverlayEnabled,
+        setIsOverlayEnabled,
+        upperFrequency,
+        setUpperFrequency,
+        ...heatmapProps
+    } = useSpectrogram();
+    const { sampleRate, fftSize } = useMicrophoneStore(state => ({
+        sampleRate: state.sampleRate,
+        fftSize: state.fftSize,
+    }));
+
+    const frequencyResolution = sampleRate / fftSize;
     return (
-        <div ref={containerRef} className="w-full">
-            <UpdatingHeatmap {...heatmapProps}/>
+        <div ref={containerRef} className="w-full" style={{ position: 'relative' }}>
+            <div>
+                <button onClick={() => setIsOverlayEnabled(!isOverlayEnabled)}>
+                    {isOverlayEnabled ? 'Disable Y-Axis' : 'Enable Y-Axis'}
+                </button>
+                <label htmlFor="upperFrequency" style={{ marginLeft: '10px' }}>Max Frequency (Hz):</label>
+                <input className={"rounded-b text-black"}
+                    type="number"
+                    id="upperFrequency"
+                    value={upperFrequency}
+                    onChange={setUpperFrequency}
+                    min="1"
+                    max={sampleRate / 2}
+                    style={{ marginLeft: '5px', width: '80px' }}
+                />
+            </div>
+            <UpdatingHeatmap
+                {...heatmapProps}
+                height={heatmapProps.canvasProps.height}
+                frequencyResolution={frequencyResolution}
+                sampleRate={sampleRate}
+                fftSize={fftSize}
+                disableOverlay={!isOverlayEnabled}
+                upperFrequency={upperFrequency} // Pass the upper frequency
+            />
         </div>
-    )
-}
+    );
+};
+
 
 export default function Page() {
     return (

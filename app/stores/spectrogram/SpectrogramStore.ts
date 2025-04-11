@@ -1,6 +1,6 @@
 import create from "zustand";
 import {devtools} from "zustand/middleware";
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {useMicrophoneStore} from "@/app/providers/MicrophoneProvider";
 import {useHeatmapSettings} from "@/app/stores/spectrogram/HeatmapSettingsStore";
 
@@ -56,23 +56,42 @@ const useDivSize = () => {
     return {containerWidth, containerRef};
 }
 
+const DEFAULT_UPPER_FREQUENCY = 5000; // Default upper frequency in Hz
+
 export const useSpectrogram = () => {
     const {currentColumn} = useSpectrogramDataStore()
 
-    const microphoneState = useMicrophoneStore(state => ({
+    const {userMicrophone, micIsEnabled, fftSize, sampleRate} = useMicrophoneStore(state => ({
         userMicrophone: state.userMicrophone,
         micIsEnabled: state.userMicrophone?.enabled || false,
         fftSize: state.fftSize,
+        sampleRate: state.sampleRate
     }))
 
-    const {userMicrophone, micIsEnabled} = microphoneState
 
-    const {fftSize} = microphoneState
+    const fullHeight = userMicrophone?.analyserNode?.frequencyBinCount || fftSize / 2;
+    const frequencyResolution = sampleRate / fftSize;
 
-    const height = userMicrophone?.analyserNode?.frequencyBinCount || fftSize / 2;
+    const [isOverlayEnabled, setIsOverlayEnabled] = useState(true);
+    const [upperFrequency, setUpperFrequencyValue] = useState(5000);
+
+    const setUpperFrequency: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        const value = parseInt(e.target.value, 10);
+        if (!isNaN(value) && value > 0 && value <= sampleRate / 2) {
+            setUpperFrequencyValue(value);
+        } else {
+            setUpperFrequencyValue(DEFAULT_UPPER_FREQUENCY);
+        }
+        // setUpperFrequencyValue(sampleRate / 2);
+    }
+
+    // Calculate the number of frequency bins to represent the desired range
+    const visibleFrequencyBins = Math.floor(upperFrequency / frequencyResolution);
+    const height = Math.min(fullHeight, visibleFrequencyBins);
 
     const heatmapSettings = useHeatmapSettings()
     const {containerWidth, containerRef} = useDivSize();
+
 
     return {
         canvasProps: {
@@ -84,6 +103,10 @@ export const useSpectrogram = () => {
             shouldDraw: micIsEnabled,
             heatmapSettings,
         },
-        containerRef
+        containerRef,
+        isOverlayEnabled,
+        setIsOverlayEnabled,
+        upperFrequency,
+        setUpperFrequency
     }
 }
