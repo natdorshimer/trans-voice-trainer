@@ -11,6 +11,8 @@ interface SpectrogramOverlayProps {
     upperFrequency: number; // Receive the upper frequency
 }
 
+export const LABEL_OFFSET = 60;
+
 export const SpectrogramOverlay: React.FC<SpectrogramOverlayProps> = ({
                                                                           height,
                                                                           frequencyResolution,
@@ -42,7 +44,7 @@ export const SpectrogramOverlay: React.FC<SpectrogramOverlayProps> = ({
         const textColor = 'lightgray';
         const textFont = '10px Arial';
         const tickLength = 5;
-        const numLabels = 5;
+        const numLabels = 10;
 
         ctx.fillStyle = textColor;
         ctx.font = textFont;
@@ -55,8 +57,6 @@ export const SpectrogramOverlay: React.FC<SpectrogramOverlayProps> = ({
         ctx.moveTo(0, 0);
         ctx.lineTo(0, canvas.height);
         ctx.stroke();
-
-        const nyquistFrequency = sampleRate / 2;
 
         // Calculate frequency label positions for the visible range
         for (let i = 0; i <= numLabels; i++) {
@@ -87,13 +87,13 @@ export const SpectrogramOverlay: React.FC<SpectrogramOverlayProps> = ({
     return (
         <canvas
             ref={canvasRef}
-            width={30}
+            width={LABEL_OFFSET}
             height={height}
             style={{
                 position: 'absolute',
                 right: 0,
                 top: 0,
-                pointerEvents: 'none',
+                pointerEvents: 'none'
             }}
         />
     );

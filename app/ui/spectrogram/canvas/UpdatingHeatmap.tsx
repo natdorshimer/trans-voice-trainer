@@ -1,4 +1,3 @@
-
 //UpdatingHeatmap.tsx
 import React from "react";
 
@@ -8,7 +7,7 @@ import { useMicrophoneStore } from "@/app/providers/MicrophoneProvider";
 import { useSpectrogramDataStore } from "@/app/stores/spectrogram/SpectrogramStore";
 import { getFrequencyMagnitudeData } from "@/app/lib/microphone/GetFrequencyMagnitudeData";
 import { CanvasProps } from "@/app/ui/spectrogram/canvas/Heatmap";
-import { SpectrogramOverlay } from "@/app/ui/spectrogram/canvas/SpectrogramOverlay";
+import {LABEL_OFFSET, SpectrogramOverlay} from "@/app/ui/spectrogram/canvas/SpectrogramOverlay";
 
 export interface UpdatingHeatmapProps {
     drawData: UpdatingHeatmapDrawData;
@@ -111,6 +110,10 @@ const shiftCanvasLeftByDelta = (ctx: CanvasRenderingContext2D, delta: number) =>
     ctx.putImageData(imageData, 0, 0)
 }
 
+function average(data: number[]): number {
+    return data.reduce((a: number, b: number) => a + b, 0)/data.length;
+}
+
 const drawColumn = (
     ctx: CanvasRenderingContext2D,
     drawData: UpdatingHeatmapDrawData,
@@ -120,17 +123,18 @@ const drawColumn = (
 ) => {
     const {columnToDraw, heatmapSettings} = drawData;
     const gradientScale = heatmapSettings.gradientScale;
-    const visibleFrequencyBins = Math.floor(upperFrequency / frequencyResolution);
 
-    console.log("Column length : ", columnToDraw.length);
-    console.log("Canvas height: ", canvasHeight);
+    const visibleFrequencyBins = Math.floor(upperFrequency / frequencyResolution);
+    const startingIndex = columnToDraw.length - visibleFrequencyBins;
+    const numIndexesPerPixel = visibleFrequencyBins / canvasHeight;
 
     for (let i = 0; i < canvasHeight; i++) {
-        const index = columnToDraw.length - canvasHeight + i;
-        const magnitude = columnToDraw[index];
+        const startingIndexAtPixel = Math.floor(startingIndex + i*numIndexesPerPixel);
+        const pixelData = columnToDraw.slice(startingIndexAtPixel, startingIndexAtPixel+Math.max(1, Math.floor(numIndexesPerPixel)));
+        const magnitude = average(pixelData);
         const alpha = magnitude / heatmapSettings.max;
 
         ctx.fillStyle = gradientScale(alpha).alpha(alpha).css('rgb');
-        ctx.fillRect(ctx.canvas.width - 60, i, 1, 1);
+        ctx.fillRect(ctx.canvas.width - LABEL_OFFSET, i, 1, 1);
     }
 }

@@ -56,7 +56,7 @@ const useDivSize = () => {
     return {containerWidth, containerRef};
 }
 
-const DEFAULT_UPPER_FREQUENCY = 5000; // Default upper frequency in Hz
+const DEFAULT_UPPER_FREQUENCY = 4096; // Default upper frequency in Hz
 
 export const useSpectrogram = () => {
     const {currentColumn} = useSpectrogramDataStore()
@@ -73,22 +73,23 @@ export const useSpectrogram = () => {
     const frequencyResolution = sampleRate / fftSize;
 
     const [isOverlayEnabled, setIsOverlayEnabled] = useState(true);
-    const [upperFrequency, setUpperFrequencyValue] = useState(5000);
+    const [upperFrequency, setUpperFrequencyValue] = useState(DEFAULT_UPPER_FREQUENCY);
 
     const setUpperFrequency: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         const value = parseInt(e.target.value, 10);
         if (!isNaN(value) && value > 0 && value <= sampleRate / 2) {
             setUpperFrequencyValue(value);
         } else {
-            setUpperFrequencyValue(DEFAULT_UPPER_FREQUENCY);
+            setUpperFrequencyValue(Math.min(DEFAULT_UPPER_FREQUENCY, sampleRate / 2));
         }
         // setUpperFrequencyValue(sampleRate / 2);
     }
 
     // Calculate the number of frequency bins to represent the desired range
     const visibleFrequencyBins = Math.floor(upperFrequency / frequencyResolution);
-    const height = Math.min(fullHeight, visibleFrequencyBins);
+    // const height = Math.min(fullHeight, visibleFrequencyBins);
 
+    const height = 512;
     const heatmapSettings = useHeatmapSettings()
     const {containerWidth, containerRef} = useDivSize();
 
