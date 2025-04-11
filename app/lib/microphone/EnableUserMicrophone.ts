@@ -1,5 +1,8 @@
 import {UserMicrophone} from "@/app/lib/microphone/UserMicrophone";
 import {AudioSettings} from "@/app/stores/spectrogram/AudioSettingsSlice";
+import {computeFormantsBase, getEssentia} from "@/app/lib/DSP";
+import {FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
+import {CircularBuffer} from "@/app/lib/CircularBuffer";
 
 export const enableUserMicrophone = async (
     settings: AudioSettings,
@@ -29,10 +32,17 @@ export const enableUserMicrophone = async (
     streamSource.connect(analyserNode)
     streamSource.connect(recorderNode)
 
+    const essentia = await getEssentia();
+
     const recordedChunks: Float32Array[] = previousChunks || [];
-    recorderNode.port.onmessage = (event) => {
+    const formantData = new CircularBuffer<FormantData>(10);
+
+    recorderNode.port.onmessage = async (event) => {
         if (event.data.type === 'data') {
             recordedChunks.push(new Float32Array(event.data.samples));
+
+            //TODO: Move to processor!
+            formantData.push(await computeFormantsBase(essentia, event.data.samples, audioCtx.sampleRate));
         }
     };
 
@@ -44,7 +54,8 @@ export const enableUserMicrophone = async (
         analyserNode,
         audioCtx,
         recordedChunks,
-        enabled: true
+        enabled: true,
+        currentFormants: formantData
     }
 }
 

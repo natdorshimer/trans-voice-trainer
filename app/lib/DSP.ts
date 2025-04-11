@@ -8,6 +8,7 @@ import findRoots from 'durand-kerner';
 import Essentia from "essentia.js/dist/essentia.js-core.es.js";
 // @ts-ignore
 import EssentiaWASM from "essentia.js/dist/essentia-wasm.web.js";
+import {FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 
 let essentia: Essentia | undefined = undefined;
 
@@ -39,12 +40,8 @@ interface Segment {
     conf: number;
 }
 
-interface WordWithFormants {
+interface WordWithFormants extends FormantData {
     word: string;
-    f0_hz: number;
-    f1_hz: number;
-    f2_hz: number;
-    f3_hz: number;
 }
 
 interface Complex {
@@ -85,10 +82,10 @@ const findRootsComplex = (coefs: Float32Array) => {
 function extractAudioSegment(
     samples: Float32Array,
     sampleRate: number,
-    start: number,
-    end: number,
-    word: string
+    segment: Segment
 ): Float32Array | null {
+    const {word, start, end} = segment;
+
     const startIndex = Math.max(0, Math.floor(start * sampleRate));
     const endIndex = Math.min(samples.length, Math.floor(end * sampleRate));
     const segmentLength = endIndex - startIndex;
@@ -229,6 +226,23 @@ function extractFormantsFromLPC(lpcCoeffs: Float32Array | null, sampleRate: numb
     return [f1_hz, f2_hz, f3_hz];
 }
 
+export async function computeFormantsBase(
+    essentia: Essentia,
+    samples: Float32Array,
+    sampleRate: number
+): Promise<FormantData> {
+    const f0_hz = estimateF0(essentia, samples, sampleRate);
+    const emphasizedSegment = preprocessForLPC(samples);
+    const lpcCoeffs = computeLPC(essentia, emphasizedSegment, sampleRate);
+    const [f1_hz, f2_hz, f3_hz] = extractFormantsFromLPC(lpcCoeffs, sampleRate);
+
+    return {
+        f0_hz: Math.round(f0_hz),
+        f1_hz: f1_hz,
+        f2_hz: f2_hz,
+        f3_hz: f3_hz,
+    };
+}
 
 export const getEssentiaFormantAnalyzer = async () => {
     const essentia = await getEssentia();
@@ -237,24 +251,17 @@ export const getEssentiaFormantAnalyzer = async () => {
         samples: Float32Array,
         sampleRate: number
     ): Promise<WordWithFormants> {
-        const {word, start, end} = segment;
-
-        const segmentSamples = extractAudioSegment(samples, sampleRate, start, end, word);
+        const word = segment.word;
+        const segmentSamples = extractAudioSegment(samples, sampleRate, segment);
         if (!segmentSamples) {
             return {word, f0_hz: 0, f1_hz: 0, f2_hz: 0, f3_hz: 0};
         }
 
-        const f0_hz = estimateF0(essentia, segmentSamples, sampleRate);
-        const emphasizedSegment = preprocessForLPC(segmentSamples);
-        const lpcCoeffs = computeLPC(essentia, emphasizedSegment, sampleRate);
-        const [f1_hz, f2_hz, f3_hz] = extractFormantsFromLPC(lpcCoeffs, sampleRate);
+        const formants = await computeFormantsBase(essentia, segmentSamples, sampleRate);
 
         return {
-            word: word,
-            f0_hz: Math.round(f0_hz),
-            f1_hz: f1_hz,
-            f2_hz: f2_hz,
-            f3_hz: f3_hz,
+            word,
+            ...formants
         };
     }
 }

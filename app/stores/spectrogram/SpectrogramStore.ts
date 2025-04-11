@@ -3,6 +3,7 @@ import {devtools} from "zustand/middleware";
 import React, {useEffect, useRef, useState} from "react";
 import {useMicrophoneStore} from "@/app/providers/MicrophoneProvider";
 import {useHeatmapSettings} from "@/app/stores/spectrogram/HeatmapSettingsStore";
+import {useHeatmapSettingsStore} from "@/app/providers/HeatmapSettingsProvider";
 
 export interface SpectrogramDataState {
     currentColumn: number[],
@@ -72,19 +73,9 @@ export const useSpectrogram = () => {
     const fullHeight = userMicrophone?.analyserNode?.frequencyBinCount || fftSize / 2;
     const frequencyResolution = sampleRate / fftSize;
 
-    const [isOverlayEnabled, setIsOverlayEnabled] = useState(true);
-    const [upperFrequency, setUpperFrequencyValue] = useState(DEFAULT_UPPER_FREQUENCY);
+    const isOverlayEnabled = useHeatmapSettingsStore(state => state.isOverlayEnabled);
 
-    const setUpperFrequency: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        const value = parseInt(e.target.value, 10);
-        if (!isNaN(value) && value > 0 && value <= sampleRate / 2) {
-            setUpperFrequencyValue(value);
-        } else {
-            setUpperFrequencyValue(Math.min(DEFAULT_UPPER_FREQUENCY, sampleRate / 2));
-        }
-        // setUpperFrequencyValue(sampleRate / 2);
-    }
-
+    const upperFrequency = useHeatmapSettingsStore(state => state.upperFrequency);
     // Calculate the number of frequency bins to represent the desired range
     const visibleFrequencyBins = Math.floor(upperFrequency / frequencyResolution);
     // const height = Math.min(fullHeight, visibleFrequencyBins);
@@ -93,6 +84,7 @@ export const useSpectrogram = () => {
     const heatmapSettings = useHeatmapSettings()
     const {containerWidth, containerRef} = useDivSize();
 
+    const isHeatmapEnabled = useHeatmapSettingsStore(state => state.isEnabled)
 
     return {
         canvasProps: {
@@ -102,12 +94,13 @@ export const useSpectrogram = () => {
         drawData: {
             columnToDraw: currentColumn,
             shouldDraw: micIsEnabled,
+            heatmapEnabled: isHeatmapEnabled,
             heatmapSettings,
         },
         containerRef,
         isOverlayEnabled,
-        setIsOverlayEnabled,
         upperFrequency,
-        setUpperFrequency
+        formantData: userMicrophone?.currentFormants,
+        isHeatmapEnabled,
     }
 }

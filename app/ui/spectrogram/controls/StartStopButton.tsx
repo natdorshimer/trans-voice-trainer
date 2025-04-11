@@ -86,6 +86,47 @@ const useStartStopButton = (params: StartStopButtonParams) => {
     }
 }
 
+export const StandardSpectrogramButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = (props) => {
+    return <button
+        className={'bg-cyan-700 hover:bg-blue-400 focus-visible:outline-blue-500 active:bg-blue-600 items-center rounded-lg px-4 text-sm font-medium text-white transition-colors h-10 flex h-10 items-center rounded-lg px-4 text-sm font-medium text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 mt-2' }
+        {...props}
+    ></button>
+}
+
+export const OnOffButton: React.FC<OnOffButtonParams> = (params) => {
+    const on = params.on || false;
+    const onClick = () => params.setOn(!on);
+
+    const colorsStarted = 'bg-cyan-700 hover:bg-blue-400 focus-visible:outline-blue-500 active:bg-blue-600'
+    const colorsStopped = 'bg-red-700 hover:bg-red-400 focus-visible:outline-red-500 active:bg-red-600';
+
+    const className = clsx(
+        on ? colorsStarted : colorsStopped,
+        'flex',
+        'h-10',
+        'items-center',
+        'rounded-lg',
+        'px-4',
+        'text-sm',
+        'font-medium',
+        'text-white',
+        'transition-colors',
+        'focus-visible:outline',
+        'focus-visible:outline-2',
+        'focus-visible:outline-offset-2',
+        'aria-disabled:cursor-not-allowed',
+        'aria-disabled:opacity-50'
+    );
+    return <div>
+        <button
+            onClick={onClick}
+            className={className}
+        >
+            {on ? params.onText : params.offText}
+        </button>
+    </div>
+}
+
 type NewState = [action: () => void, state: ButtonState]
 type NewStateMapping = {
     [key in ButtonState]: NewState;
@@ -100,4 +141,12 @@ interface StartStopButtonParams {
     onStart: () => void,
     onStop: () => void,
     buttonStateDefault?: ButtonState
+}
+
+interface OnOffButtonParams {
+    onText: string,
+    offText: string,
+    setOn: (state: boolean) => void,
+    on?: boolean,
+    keyControl?: string
 }

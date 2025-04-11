@@ -13,9 +13,9 @@ const Spectrogram = () => {
     const {
         containerRef,
         isOverlayEnabled,
-        setIsOverlayEnabled,
         upperFrequency,
-        setUpperFrequency,
+        formantData,
+        isHeatmapEnabled,
         ...heatmapProps
     } = useSpectrogram();
     const { sampleRate, fftSize } = useMicrophoneStore(state => ({
@@ -26,21 +26,6 @@ const Spectrogram = () => {
     const frequencyResolution = sampleRate / fftSize;
     return (
         <div ref={containerRef} className="w-full" style={{ position: 'relative' }}>
-            <div>
-                <button onClick={() => setIsOverlayEnabled(!isOverlayEnabled)}>
-                    {isOverlayEnabled ? 'Disable Y-Axis' : 'Enable Y-Axis'}
-                </button>
-                <label htmlFor="upperFrequency" style={{ marginLeft: '10px' }}>Max Frequency (Hz):</label>
-                <input className={"rounded-b text-black"}
-                    type="number"
-                    id="upperFrequency"
-                    value={upperFrequency}
-                    onChange={setUpperFrequency}
-                    min="1"
-                    max={sampleRate / 2}
-                    style={{ marginLeft: '5px', width: '80px' }}
-                />
-            </div>
             <UpdatingHeatmap
                 {...heatmapProps}
                 height={heatmapProps.canvasProps.height}
@@ -49,6 +34,8 @@ const Spectrogram = () => {
                 fftSize={fftSize}
                 disableOverlay={!isOverlayEnabled}
                 upperFrequency={upperFrequency} // Pass the upper frequency
+                formantData={formantData}
+                areFormantsVisible={isOverlayEnabled}
             />
         </div>
     );

@@ -1,10 +1,9 @@
 'use client';
 import React, {useCallback, useEffect, useRef, useState} from "react";
+import {CanvasProps} from "@/app/ui/spectrogram/canvas/Heatmap";
 
-interface Canvas2DProps {
+interface Canvas2DProps extends CanvasProps {
     contextToTick: (ctx: CanvasState) => (() => void);
-    height: number;
-    width: number | undefined;
 }
 
 export const Canvas2D: React.FC<Canvas2DProps & React.ComponentPropsWithoutRef<'canvas'>> = (props) => {

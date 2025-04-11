@@ -25,7 +25,7 @@ export const SpectrogramOverlay: React.FC<SpectrogramOverlayProps> = ({
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
     useEffect(() => {
-        if (disableOverlay || !canvasRef.current) {
+        if (!canvasRef.current) {
             return;
         }
 
@@ -38,6 +38,8 @@ export const SpectrogramOverlay: React.FC<SpectrogramOverlayProps> = ({
 
         // Clear the overlay canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (disableOverlay) return;
 
         // Drawing parameters
         const yAxisWidth = 30;

@@ -1,31 +1,49 @@
-//UpdatingHeatmap.tsx
 import React from "react";
-
 import { HeatmapSettings } from "@/app/stores/spectrogram/HeatmapSettingsStore";
 import { Canvas2D, CanvasState } from "./Canvas2D";
 import { useMicrophoneStore } from "@/app/providers/MicrophoneProvider";
 import { useSpectrogramDataStore } from "@/app/stores/spectrogram/SpectrogramStore";
 import { getFrequencyMagnitudeData } from "@/app/lib/microphone/GetFrequencyMagnitudeData";
 import { CanvasProps } from "@/app/ui/spectrogram/canvas/Heatmap";
-import {LABEL_OFFSET, SpectrogramOverlay} from "@/app/ui/spectrogram/canvas/SpectrogramOverlay";
+import { SpectrogramOverlay } from "@/app/ui/spectrogram/canvas/SpectrogramOverlay";
+import {CircularBuffer} from "@/app/lib/CircularBuffer"; // Import FormantData
 
 export interface UpdatingHeatmapProps {
     drawData: UpdatingHeatmapDrawData;
     canvasProps: CanvasProps & React.ComponentPropsWithoutRef<'canvas'>;
-    height: number; // Make sure to pass the height down
-    frequencyResolution: number; // Pass this down
-    sampleRate: number; // Pass this down
-    fftSize: number; // Pass this down
-    disableOverlay?: boolean; // Prop to disable the overlay
-    upperFrequency: number; // Add upper frequency prop
+    height: number;
+    frequencyResolution: number;
+    sampleRate: number;
+    fftSize: number;
+    disableOverlay?: boolean;
+    upperFrequency: number;
+    areFormantsVisible: boolean; // Add formant visibility
+    formantData: CircularBuffer<FormantData> | null; // Add formant data
+}
+
+export interface FormantData {
+    f0_hz: number;
+    f1_hz: number;
+    f2_hz: number;
+    f3_hz: number;
 }
 
 export interface UpdatingHeatmapDrawData {
     shouldDraw: boolean;
+    heatmapEnabled: boolean;
     columnToDraw: number[];
     heatmapSettings: HeatmapSettings;
 }
 
+const formantColors = { // Keep formant colors here
+    f0_hz: 'red',
+    f1_hz: 'yellow',
+    f2_hz: 'lime',
+    f3_hz: 'cyan',
+};
+
+const FORMANT_INDICATOR_HEIGHT = 5;
+const FORMANT_INDICATOR_WIDTH = 10;
 
 export const UpdatingHeatmap: React.FC<UpdatingHeatmapProps> = ({
                                                                     drawData,
@@ -35,22 +53,26 @@ export const UpdatingHeatmap: React.FC<UpdatingHeatmapProps> = ({
                                                                     sampleRate,
                                                                     fftSize,
                                                                     disableOverlay,
-                                                                    upperFrequency, // Receive upper frequency
+                                                                    upperFrequency,
+                                                                    areFormantsVisible, // Receive formant visibility
+                                                                    formantData,       // Receive formant data
                                                                     ...props
                                                                 }) => {
-    const contextToTick = ({ context }: CanvasState) => useAnimateShiftLeftAndDrawColumn(context, drawData, upperFrequency, height);
+    const contextToTick = ({ context }: CanvasState) => useAnimateShiftLeftAndDrawColumn(
+        context, drawData, frequencyResolution, upperFrequency, height, areFormantsVisible, formantData
+    );
 
     return (
         <div
             className={'bg-black rounded-lg'}
-            style={{ position: 'relative' }} // Make this a positioning context for the overlay
+            style={{ position: 'relative' }}
         >
             <Canvas2D
-                className={`rounded-lg`}
+                className={`rounded-lg}`}
                 {...props}
                 {...canvasProps}
                 contextToTick={contextToTick}
-                height={height} // Pass the potentially reduced height to Canvas2D
+                height={height}
             />
             <SpectrogramOverlay
                 height={height}
@@ -59,26 +81,27 @@ export const UpdatingHeatmap: React.FC<UpdatingHeatmapProps> = ({
                 fftSize={fftSize}
                 disableOverlay={disableOverlay}
                 spectrogramWidth={canvasProps.width!}
-                upperFrequency={upperFrequency} // Pass upper frequency to overlay
+                upperFrequency={upperFrequency}
             />
         </div>
     );
 };
 
-
 const useAnimateShiftLeftAndDrawColumn = (
     context: CanvasRenderingContext2D | null,
     drawData: UpdatingHeatmapDrawData,
+    frequencyResolution: number,
     upperFrequency: number,
-    canvasHeight: number
+    canvasHeight: number,
+    areFormantsVisible: boolean, // Receive formant visibility
+    formantData: CircularBuffer<FormantData> | null // Receive formant data
 ) => {
     const { setColumn } = useSpectrogramDataStore(state => ({
         setColumn: state.setColumn
     }));
 
-    const { userMicrophone, frequencyResolution } = useMicrophoneStore(state => ({
+    const { userMicrophone } = useMicrophoneStore(state => ({
         userMicrophone: state.userMicrophone,
-        frequencyResolution: state.sampleRate / state.fftSize,
     }));
 
     const updateFftData = () => {
@@ -87,7 +110,9 @@ const useAnimateShiftLeftAndDrawColumn = (
 
     return () => {
         updateFftData();
-        context && shiftLeftAndDrawColumn(context, drawData, frequencyResolution, upperFrequency, canvasHeight);
+        context && shiftLeftAndDrawColumn(
+            context, drawData, frequencyResolution, upperFrequency, canvasHeight, areFormantsVisible, formantData
+        );
     };
 }
 
@@ -96,11 +121,13 @@ const shiftLeftAndDrawColumn = (
     drawData: UpdatingHeatmapDrawData,
     frequencyResolution: number,
     upperFrequency: number,
-    canvasHeight: number
+    canvasHeight: number,
+    areFormantsVisible: boolean, // Receive formant visibility
+    formantData: CircularBuffer<FormantData> | null  // Receive formant data
 ) => {
     if (drawData.shouldDraw) {
         shiftCanvasLeftByDelta(ctx, 1)
-        drawColumn(ctx, drawData, frequencyResolution, upperFrequency, canvasHeight)
+        drawColumn(ctx, drawData, frequencyResolution, upperFrequency, canvasHeight, areFormantsVisible, formantData);
     }
 }
 
@@ -111,7 +138,7 @@ const shiftCanvasLeftByDelta = (ctx: CanvasRenderingContext2D, delta: number) =>
 }
 
 function average(data: number[]): number {
-    return data.reduce((a: number, b: number) => a + b, 0)/data.length;
+    return data.reduce((a: number, b: number) => a + b, 0) / data.length;
 }
 
 const drawColumn = (
@@ -119,22 +146,74 @@ const drawColumn = (
     drawData: UpdatingHeatmapDrawData,
     frequencyResolution: number,
     upperFrequency: number,
-    canvasHeight: number
+    canvasHeight: number,
+    areFormantsVisible: boolean, // Receive formant visibility
+    formantData: CircularBuffer<FormantData> | null  // Receive formant data
 ) => {
-    const {columnToDraw, heatmapSettings} = drawData;
+    const { columnToDraw, heatmapSettings } = drawData;
     const gradientScale = heatmapSettings.gradientScale;
 
     const visibleFrequencyBins = Math.floor(upperFrequency / frequencyResolution);
     const startingIndex = columnToDraw.length - visibleFrequencyBins;
     const numIndexesPerPixel = visibleFrequencyBins / canvasHeight;
 
-    for (let i = 0; i < canvasHeight; i++) {
-        const startingIndexAtPixel = Math.floor(startingIndex + i*numIndexesPerPixel);
-        const pixelData = columnToDraw.slice(startingIndexAtPixel, startingIndexAtPixel+Math.max(1, Math.floor(numIndexesPerPixel)));
-        const magnitude = average(pixelData);
-        const alpha = magnitude / heatmapSettings.max;
+    if (drawData.heatmapEnabled) {
+        for (let i = 0; i < canvasHeight; i++) {
+            const startingIndexAtPixel = Math.floor(startingIndex + i * numIndexesPerPixel);
+            const pixelData = columnToDraw.slice(startingIndexAtPixel, startingIndexAtPixel + Math.max(1, Math.floor(numIndexesPerPixel)));
+            const magnitude = average(pixelData);
+            const alpha = magnitude / heatmapSettings.max;
 
-        ctx.fillStyle = gradientScale(alpha).alpha(alpha).css('rgb');
-        ctx.fillRect(ctx.canvas.width - LABEL_OFFSET, i, 1, 1);
+            if (alpha === undefined || alpha < 0) {
+                console.log(magnitude);
+                console.log(pixelData);
+                console.log(heatmapSettings.max);
+                throw new Error("the fuck?");
+            }
+
+            ctx.fillStyle = gradientScale(alpha)?.alpha(alpha)?.css('rgb');
+            ctx.fillRect(ctx.canvas.width - 60, i, 1, 1);
+        }
     }
-}
+
+    // Draw formant indicators on the spectrogram
+    const entry = formantData && getAverageFormants(formantData);
+    if (areFormantsVisible && entry) {
+        Object.entries(entry).forEach(([formant, frequency]) => {
+            if (frequency > 0) {
+                const y = canvasHeight - (frequency / upperFrequency) * canvasHeight - FORMANT_INDICATOR_HEIGHT / 2;
+                const color = (formantColors as any)[formant] || 'white';
+
+                ctx.fillStyle = color;
+                ctx.fillRect(ctx.canvas.width - 60, y, FORMANT_INDICATOR_WIDTH, FORMANT_INDICATOR_HEIGHT);
+            }
+        });
+    }
+};
+
+const getAverageFormants = (formants: CircularBuffer<FormantData>): FormantData | null => {
+    if (formants.isEmpty()) {
+        return null;
+    }
+
+    let sum_f0 = 0;
+    let sum_f1 = 0;
+    let sum_f2 = 0;
+    let sum_f3 = 0;
+    let count = 0;
+
+    formants.forEach(data => {
+        sum_f0 += data.f0_hz;
+        sum_f1 += data.f1_hz;
+        sum_f2 += data.f2_hz;
+        sum_f3 += data.f3_hz;
+        count++;
+    });
+
+    return {
+        f0_hz: sum_f0 / count,
+        f1_hz: sum_f1 / count,
+        f2_hz: sum_f2 / count,
+        f3_hz: sum_f3 / count,
+    };
+};
