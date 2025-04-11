@@ -34,7 +34,7 @@ const Spectrogram = () => {
                 fftSize={fftSize}
                 disableOverlay={!isOverlayEnabled}
                 upperFrequency={upperFrequency} // Pass the upper frequency
-                formantData={formantData}
+                formantData={formantData || null}
                 areFormantsVisible={isOverlayEnabled}
             />
         </div>
