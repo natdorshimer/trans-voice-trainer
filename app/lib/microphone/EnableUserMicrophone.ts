@@ -6,7 +6,7 @@ import {CircularBuffer} from "@/app/lib/CircularBuffer";
 
 export const enableUserMicrophone = async (
     settings: AudioSettings,
-    previousChunks: Float32Array[] | undefined = undefined
+    previousChunks: CircularBuffer<Float32Array> | undefined = undefined
 ): Promise<UserMicrophone> => {
     const stream = await navigator
         .mediaDevices
@@ -34,8 +34,8 @@ export const enableUserMicrophone = async (
 
     const essentia = await getEssentia();
 
-    const recordedChunks: Float32Array[] = previousChunks || [];
-    const formantData = new CircularBuffer<FormantData>(10);
+    const recordedChunks: CircularBuffer<Float32Array> = previousChunks || new CircularBuffer<Float32Array>(60 * 10);
+    const formantData = new CircularBuffer<FormantData>(20);
 
     recorderNode.port.onmessage = async (event) => {
         if (event.data.type === 'data') {

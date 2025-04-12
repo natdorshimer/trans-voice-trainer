@@ -8,7 +8,7 @@
 export class CircularBuffer<T> {
     /** The maximum number of elements the buffer can hold. */
     public readonly maxSize: number;
-    private buffer: (T | undefined)[]; // Underlying storage, allows undefined for empty slots
+    private readonly buffer: (T | undefined)[]; // Underlying storage, allows undefined for empty slots
     private head: number = 0; // Index of the logical start (oldest element, index 0)
     private tail: number = 0; // Index where the next element will be inserted
     private currentSize: number = 0; // Number of elements currently in the buffer

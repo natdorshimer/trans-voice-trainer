@@ -1,6 +1,7 @@
 import {Segment} from "@/app/lib/segmenter";
 import {WordWithFormants} from "@/app/ui/spectrogram/FormantAnalysis";
 import {mergeBuffers} from "@/app/lib/microphone/EnableUserMicrophone";
+import {CircularBuffer} from "@/app/lib/CircularBuffer";
 
 export type Segmenter = (ctx: AudioContext, samples: Float32Array) => Promise<Segment[]>;
 export type FormantExtractor = (segment: Segment, samples: Float32Array, sampleRate: number) => Promise<WordWithFormants>;
@@ -20,7 +21,7 @@ export class AudioAnalyzer {
         this.extractFormantsFromWords = extractFormantsFromWords;
     }
 
-    public async computeAllFormants(recordedChunks: Float32Array[]) {
+    public async computeAllFormants(recordedChunks: CircularBuffer<Float32Array>) {
         const samples = mergeBuffers(recordedChunks);
         const segments = await this.extractWordSegments(this.audioCtx, samples);
 

@@ -4,6 +4,7 @@ import {getVoskSegmenter} from "@/app/lib/segmenter";
 import {getEssentiaFormantAnalyzer} from "@/app/lib/DSP";
 import {useMicrophoneStore} from "@/app/providers/MicrophoneProvider";
 import {AudioAnalyzer} from "@/app/lib/AudioAnalyzer";
+import {CircularBuffer} from "@/app/lib/CircularBuffer";
 
 export const useAudioAnalyzer = (audioCtx: AudioContext | undefined) => {
     const [audioAnalyzer, setAudioAnalyzer] = useState<AudioAnalyzer | null>(null);
@@ -70,7 +71,7 @@ export const AnalyzeRecording = () => {
 
 export interface AnalyzeRecordingProps {
     analyzer: AudioAnalyzer;
-    recordedChunks: Float32Array[];
+    recordedChunks: CircularBuffer<Float32Array>
 }
 
 const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, recordedChunks}) => {
