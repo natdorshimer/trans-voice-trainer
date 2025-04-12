@@ -48,9 +48,55 @@ const getFormantColor = (current: number, target: number | undefined, type: 'fem
 interface SmallWordDisplayProps {
     wordWithFormants: WordWithFormants;
     onBoxClick: (wordWithFormants: WordWithFormants) => void;
-    onFormantClick: (formant: 'f0_hz' | 'f1_hz' | 'f2_hz' | 'f3_hz', word: string) => void;
+    onFormantClick: (formant: 'f0_hz' | 'f1_hz' | 'f2_hz' | 'f3_hz', wordWithFormants: WordWithFormants) => void;
     comparisonType: 'feminine' | 'masculine' | null;
 }
+
+
+const SmallWordDisplaySkeleton = () => {
+    const skeletonBaseClass = "bg-zinc-600 rounded";
+    const skeletonPulseClass = "animate-pulse";
+
+    return (
+        <div
+            className="p-2 rounded-md bg-zinc-700 inline-flex flex-col items-center mr-2 mb-2"
+            aria-hidden="true"
+        >
+
+            {/* Placeholder for the word - will be centered by items-center on parent */}
+            <div className={`h-5 w-16 mb-2 ${skeletonBaseClass} ${skeletonPulseClass}`}></div>
+
+            {/* Container for formant placeholders - will be centered by items-center on parent */}
+            <div className="flex space-x-1">
+
+                {/* F0 Placeholder Block */}
+                <div className="p-1 rounded-md bg-zinc-800 flex flex-col items-center">
+                    <div className={`text-xs text-zinc-400 mb-1`}>F0</div> {/* Label */}
+                    <div className={`h-3 w-8 ${skeletonBaseClass} ${skeletonPulseClass}`}></div> {/* Value Placeholder */}
+                </div>
+
+                {/* F1 Placeholder Block */}
+                <div className="p-1 rounded-md bg-zinc-800 flex flex-col items-center">
+                    <div className={`text-xs text-zinc-400 mb-1`}>F1</div>
+                    <div className={`h-3 w-8 ${skeletonBaseClass} ${skeletonPulseClass}`}></div>
+                </div>
+
+                {/* F2 Placeholder Block */}
+                <div className="p-1 rounded-md bg-zinc-800 flex flex-col items-center">
+                    <div className={`text-xs text-zinc-400 mb-1`}>F2</div>
+                    <div className={`h-3 w-8 ${skeletonBaseClass} ${skeletonPulseClass}`}></div>
+                </div>
+
+                {/* F3 Placeholder Block */}
+                <div className="p-1 rounded-md bg-zinc-800 flex flex-col items-center">
+                    <div className={`text-xs text-zinc-400 mb-1`}>F3</div>
+                    <div className={`h-3 w-8 ${skeletonBaseClass} ${skeletonPulseClass}`}></div>
+                </div>
+
+            </div>
+        </div>
+    );
+};
 
 const SmallWordDisplay = ({wordWithFormants, onBoxClick, onFormantClick, comparisonType}: SmallWordDisplayProps) => {
     const {word, f0_hz, f1_hz, f2_hz, f3_hz} = wordWithFormants;
@@ -63,7 +109,7 @@ const SmallWordDisplay = ({wordWithFormants, onBoxClick, onFormantClick, compari
             <div className="flex space-x-1">
                 <div
                     className={`text-xs p-1 rounded-md bg-zinc-600 focus:outline-none`}
-                    onClick={() => onFormantClick('f0_hz', word)}
+                    onClick={() => onFormantClick('f0_hz', wordWithFormants)}
                 >
                     <div>F0</div>
                     <div
@@ -71,7 +117,7 @@ const SmallWordDisplay = ({wordWithFormants, onBoxClick, onFormantClick, compari
                 </div>
                 <div
                     className={`text-xs p-1 rounded-md bg-zinc-600 focus:outline-none`}
-                    onClick={() => onFormantClick('f1_hz', word)}
+                    onClick={() => onFormantClick('f1_hz', wordWithFormants)}
                 >
                     <div>F1</div>
                     <div
@@ -79,7 +125,7 @@ const SmallWordDisplay = ({wordWithFormants, onBoxClick, onFormantClick, compari
                 </div>
                 <div
                     className={`text-xs p-1 rounded-md bg-zinc-600 focus:outline-none`}
-                    onClick={() => onFormantClick('f2_hz', word)}
+                    onClick={() => onFormantClick('f2_hz', wordWithFormants)}
                 >
                     <div>F2</div>
                     <div
@@ -87,7 +133,7 @@ const SmallWordDisplay = ({wordWithFormants, onBoxClick, onFormantClick, compari
                 </div>
                 <div
                     className={`text-xs p-1 rounded-md bg-zinc-600 focus:outline-none`}
-                    onClick={() => onFormantClick('f3_hz', word)}
+                    onClick={() => onFormantClick('f3_hz', wordWithFormants)}
                 >
                     <div>F3</div>
                     <div
@@ -166,7 +212,7 @@ const FormantDetailWindow = ({
 
 const ExpandedWordDisplay = ({wordWithFormants, onFormantClick, comparisonType}: {
     wordWithFormants: WordWithFormants;
-    onFormantClick: (formant: 'f0_hz' | 'f1_hz' | 'f2_hz' | 'f3_hz', word: string) => void,
+    onFormantClick: (formant: 'f0_hz' | 'f1_hz' | 'f2_hz' | 'f3_hz', wordWithFormants: WordWithFormants) => void,
     comparisonType: 'feminine' | 'masculine' | null;
 }) => {
     const {word, f0_hz, f1_hz, f2_hz, f3_hz} = wordWithFormants;
@@ -176,25 +222,25 @@ const ExpandedWordDisplay = ({wordWithFormants, onFormantClick, comparisonType}:
         <div className="mb-4 p-4 rounded-md shadow-md bg-zinc-700 text-white">
             <h2 className="text-xl font-semibold mb-2">{word}</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <button onClick={() => onFormantClick('f0_hz', word)} className="focus:outline-none">
+                <button onClick={() => onFormantClick('f0_hz', wordWithFormants)} className="focus:outline-none">
                     <div className="bg-zinc-600 hover:bg-zinc-500 text-white rounded-md p-2 text-center w-24">
                         <div className="font-semibold">F0</div>
                         <div>Value: {f0_hz}</div>
                     </div>
                 </button>
-                <button onClick={() => onFormantClick('f1_hz', word)} className="focus:outline-none">
+                <button onClick={() => onFormantClick('f1_hz', wordWithFormants)} className="focus:outline-none">
                     <div className="bg-zinc-600 hover:bg-zinc-500 text-white rounded-md p-2 text-center w-24">
                         <div className="font-semibold">F1</div>
                         <div>Value: {f1_hz}</div>
                     </div>
                 </button>
-                <button onClick={() => onFormantClick('f2_hz', word)} className="focus:outline-none">
+                <button onClick={() => onFormantClick('f2_hz', wordWithFormants)} className="focus:outline-none">
                     <div className="bg-zinc-600 hover:bg-zinc-500 text-white rounded-md p-2 text-center w-24">
                         <div className="font-semibold">F2</div>
                         <div>Value: {f2_hz}</div>
                     </div>
                 </button>
-                <button onClick={() => onFormantClick('f3_hz', word)} className="focus:outline-none">
+                <button onClick={() => onFormantClick('f3_hz', wordWithFormants)} className="focus:outline-none">
                     <div className="bg-zinc-600 hover:bg-zinc-500 text-white rounded-md p-2 text-center w-24">
                         <div className="font-semibold">F3</div>
                         <div>Value: {f3_hz}</div>
@@ -209,19 +255,19 @@ const ExpandedWordDisplay = ({wordWithFormants, onFormantClick, comparisonType}:
 };
 
 
-const FormantAnalysis = ({analyzedWords}: { analyzedWords: WordWithFormants[] | null }) => {
-    const [expandedWord, setExpandedWord] = useState<string | null>(null);
+const FormantAnalysis = ({analyzedWords, loading}: { analyzedWords: WordWithFormants[] | null, loading: boolean }) => {
+    const [expandedWord, setExpandedWord] = useState<WordWithFormants | null>(null);
     const [selectedFormant, setSelectedFormant] = useState<('f0_hz' | 'f1_hz' | 'f2_hz' | 'f3_hz') | null>(null);
     const [comparisonType, setComparisonType] = useState<'feminine' | 'masculine' | null>('feminine'); // Default to 'feminine'
     const setSelectedFormantForHeatmap = useHeatmapSettingsStore(state => state.setSelectedFormant)
 
-    const handleFormantClick = (formant: 'f0_hz' | 'f1_hz' | 'f2_hz' | 'f3_hz', word: string) => {
+    const handleFormantClick = (formant: 'f0_hz' | 'f1_hz' | 'f2_hz' | 'f3_hz', wordWithFormants: WordWithFormants) => {
         setSelectedFormant(formant);
-        setExpandedWord(word);
+        setExpandedWord(wordWithFormants);
     };
 
     const onBoxClick = (wordWithFormants: WordWithFormants) => {
-        setExpandedWord(wordWithFormants.word);
+        setExpandedWord(wordWithFormants);
         console.log("Selected word ", wordWithFormants.word);
         const gender = comparisonType || 'feminine';
         if (wordDatabase) {
@@ -237,12 +283,37 @@ const FormantAnalysis = ({analyzedWords}: { analyzedWords: WordWithFormants[] | 
         setSelectedFormant(null);
     };
 
-    if (!analyzedWords) {
-        return <div><p>Start recording to analyze your speech!</p></div>
-    }
-
-    const currentWordData = analyzedWords.find((w) => w.word === expandedWord);
+    const currentWordData = expandedWord;
     const currentAverageData = currentWordData ? wordDatabase[currentWordData.word.toLowerCase()] : undefined;
+
+    const SmallWordDisplayInner = () => {
+        if (!loading && analyzedWords) {
+            return analyzedWords.map((wordData, index) => (
+                <SmallWordDisplay
+                    key={index}
+                    onBoxClick={onBoxClick}
+                    wordWithFormants={wordData}
+                    onFormantClick={handleFormantClick}
+                    comparisonType={comparisonType}
+                />
+            ))
+        }
+
+        if (loading && !analyzedWords) {
+            return <p>Analyzing recording...</p>
+        }
+
+        if (loading && analyzedWords) {
+            return analyzedWords!.map((_, index) =>
+                <SmallWordDisplaySkeleton key={index}/>
+            );
+        }
+
+        if (!analyzedWords) {
+            return <div><p>Start recording to analyze your speech!</p></div>
+        }
+
+    }
 
     return (
         <div className="text-white bg-zinc-800 p-6 relative">
@@ -264,30 +335,17 @@ const FormantAnalysis = ({analyzedWords}: { analyzedWords: WordWithFormants[] | 
             </div>
 
             <div className="flex justify-center flex-wrap mb-4">
-                {analyzedWords.map((wordData, index) => (
-                    <SmallWordDisplay
-                        key={index}
-                        onBoxClick={onBoxClick}
-                        wordWithFormants={wordData}
-                        onFormantClick={handleFormantClick}
-                        comparisonType={comparisonType}
-                    />
-                ))}
+                <SmallWordDisplayInner/>
             </div>
-            {analyzedWords.map((wordData, index) => (
-                expandedWord === wordData.word && (
-                    <ExpandedWordDisplay
-                        key={`expanded-${index}`}
-                        wordWithFormants={wordData}
-                        onFormantClick={handleFormantClick}
-                        comparisonType={comparisonType}
-                    />
-                )
-            ))}
+                {expandedWord && <ExpandedWordDisplay
+                    wordWithFormants={expandedWord}
+                    onFormantClick={handleFormantClick}
+                    comparisonType={comparisonType}
+                />}
 
             {selectedFormant && expandedWord && currentWordData && (
                 <FormantDetailWindow
-                    word={expandedWord}
+                    word={expandedWord.word}
                     formant={selectedFormant}
                     onClose={handleCloseFormantDetail}
                     wordWithFormantsData={currentWordData}

@@ -69,7 +69,7 @@ export interface AnalyzeRecordingProps {
 
 const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, recordedChunks, shouldAnalyze}) => {
     const [results, setResult] = useState<WordWithFormants[] | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -91,17 +91,17 @@ const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, reco
         analyze();
     }, [analyzer, shouldAnalyze]); // Re-run analysis if recordedChunks or sampleRate change
 
-    if (loading) {
-        return <p>Analyzing recording...</p>;
-    }
+    // if (loading) {
+    //     return <p>Analyzing recording...</p>;
+    // }
 
-    if (results) {
+    // if (results) {
         return (
             <div>
-                <FormantAnalysis analyzedWords={results}/>
+                <FormantAnalysis loading={loading} analyzedWords={results}/>
             </div>
         );
-    }
+    // }
 
     if (!shouldAnalyze) {
         return <div><p>Start recording to analyze your speech!</p></div>
