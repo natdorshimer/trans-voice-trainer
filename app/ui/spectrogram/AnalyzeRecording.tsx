@@ -91,26 +91,9 @@ const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, reco
         analyze();
     }, [analyzer, shouldAnalyze]); // Re-run analysis if recordedChunks or sampleRate change
 
-    // if (loading) {
-    //     return <p>Analyzing recording...</p>;
-    // }
-
-    // if (results) {
         return (
             <div>
                 <FormantAnalysis loading={loading} analyzedWords={results}/>
             </div>
         );
-    // }
-
-    if (!shouldAnalyze) {
-        return <div><p>Start recording to analyze your speech!</p></div>
-    }
-
-    if (error) {
-        return <p>Error: {error}</p>;
-    }
-
-
-    return <></>; // Or some other default state
 };

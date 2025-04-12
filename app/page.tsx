@@ -66,11 +66,11 @@ function SpecPlus() {
                     <Spectrogram/>
                 </div>
             </header>
-            <div className="p-5 md:px-2 gap-3 flex flex-row items-start"> {/* Changed to flex-row and items-start */}
-                <div className="flex-1"> {/* Controls take up available space */}
+            <div className="p-5 md:px-2 gap-3 flex flex-col md:flex-row items-start"> {/* Default to col, row on md+ */}
+                <div className="flex-1 w-full"> {/* Ensure children take full width in column layout */}
                     <Controls/>
                 </div>
-                <div className="flex-1"> {/* Analyzer takes up available space */}
+                <div className="flex-1 w-full"> {/* Ensure children take full width in column layout */}
                     <AnalyzeRecording/>
                 </div>
             </div>

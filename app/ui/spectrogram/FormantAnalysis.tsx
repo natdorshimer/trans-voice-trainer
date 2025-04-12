@@ -299,12 +299,9 @@ const FormantAnalysis = ({analyzedWords, loading}: { analyzedWords: WordWithForm
             ))
         }
 
-        if (loading && !analyzedWords) {
-            return <p>Analyzing recording...</p>
-        }
-
-        if (loading && analyzedWords) {
-            return analyzedWords!.map((_, index) =>
+        if (loading) {
+            const skeletonSize = analyzedWords?.length || 5;
+            return new Array(skeletonSize).fill(0).map((_, index) =>
                 <SmallWordDisplaySkeleton key={index}/>
             );
         }
@@ -312,7 +309,6 @@ const FormantAnalysis = ({analyzedWords, loading}: { analyzedWords: WordWithForm
         if (!analyzedWords) {
             return <div><p>Start recording to analyze your speech!</p></div>
         }
-
     }
 
     return (
