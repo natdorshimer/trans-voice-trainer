@@ -29,7 +29,6 @@ export const useSpectrogramDataStore = create<SpectrogramDataState>(devtools(set
 
 function getElementWidthWithoutPadding(el: HTMLDivElement) {
     const styles = getComputedStyle(el);
-    console.log(styles);
 
     const paddingLeft = parseFloat(styles.paddingLeft);
     const paddingRight = parseFloat(styles.paddingRight);

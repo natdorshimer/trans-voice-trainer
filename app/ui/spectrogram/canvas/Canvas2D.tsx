@@ -57,8 +57,6 @@ const useInitCanvas2D = (props: Canvas2DProps): CanvasState => {
 
         setContext(ctx)
 
-        console.log(canvas?.width)
-
         canvas && ctx?.clearRect(0, 0, canvas.width, canvas.height)
     }, [width, height])
 

@@ -34,15 +34,24 @@ export const enableUserMicrophone = async (
 
     const essentia = await getEssentia();
 
-    const recordedChunks: CircularBuffer<Float32Array> = previousChunks || new CircularBuffer<Float32Array>(60 * 10);
+    const recordedChunks = previousChunks || new CircularBuffer<Float32Array>(60 * 10);
     const formantData = new CircularBuffer<FormantData>(20);
 
+    let quietNumber = 0;
     recorderNode.port.onmessage = async (event) => {
         if (event.data.type === 'data') {
+            const float32Samples = new Float32Array(event.data.samples);
+            const energy = float32Samples.reduce((prev, curr) => prev + Math.pow(curr, 2));
             recordedChunks.push(new Float32Array(event.data.samples));
 
             //TODO: Move to processor!
-            formantData.push(await computeFormantsBase(essentia, event.data.samples, audioCtx.sampleRate));
+            quietNumber = energy <= 0.01 ? quietNumber + 1 : 0;
+            if (quietNumber < 5) {
+                console.log(energy);
+                formantData.push(await computeFormantsBase(essentia, event.data.samples, audioCtx.sampleRate));
+            } else {
+                formantData.clear();
+            }
         }
     };
 

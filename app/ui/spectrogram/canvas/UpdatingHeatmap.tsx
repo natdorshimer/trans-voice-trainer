@@ -181,9 +181,6 @@ const drawColumn = (
             const alpha = magnitude / heatmapSettings.max;
 
             if (alpha === undefined || alpha < 0) {
-                console.log(magnitude);
-                console.log(pixelData);
-                console.log(heatmapSettings.max);
                 throw new Error("the fuck?");
             }
 
