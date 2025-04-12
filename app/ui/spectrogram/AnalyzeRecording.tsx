@@ -52,40 +52,35 @@ export const AnalyzeRecording = () => {
 
     const {audioAnalyzer} = useAudioAnalyzer(audioCtx)
 
-    if (!userMicrophone || !audioAnalyzer) {
-        return <></>;
-    }
-
-    const shouldAnalyze = !(userMicrophone.enabled) || false;
-    console.log('rendering', 'shouldAnalyze:', shouldAnalyze, 'enabled:', userMicrophone?.enabled);
-
-    if (!shouldAnalyze) {
-        return <></>
-    }
+    const shouldAnalyze = userMicrophone && audioAnalyzer && !(userMicrophone?.enabled) || false;
 
     return <AnalyzeRecordingClient
         analyzer={audioAnalyzer}
-        recordedChunks={userMicrophone.recordedChunks}
+        recordedChunks={userMicrophone?.recordedChunks}
+        shouldAnalyze={shouldAnalyze}
     />;
 }
 
 export interface AnalyzeRecordingProps {
-    analyzer: AudioAnalyzer;
-    recordedChunks: CircularBuffer<Float32Array>
+    analyzer: AudioAnalyzer | null;
+    recordedChunks: CircularBuffer<Float32Array> | undefined;
+    shouldAnalyze: boolean;
 }
 
-const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, recordedChunks}) => {
+const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, recordedChunks, shouldAnalyze}) => {
     const [results, setResult] = useState<WordWithFormants[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const analyze = async () => {
-            setLoading(true);
             setError(null);
             try {
-                const allFormants = await analyzer.computeAllFormants(recordedChunks);
-                setResult(allFormants);
+                if (shouldAnalyze) {
+                    setLoading(true);
+                    const allFormants = await analyzer!.computeAllFormants(recordedChunks!);
+                    setResult(allFormants);
+                }
             } catch (err: any) {
                 setError(err.message || 'Analysis failed.');
             } finally {
@@ -94,14 +89,10 @@ const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, reco
         };
 
         analyze();
-    }, [analyzer]); // Re-run analysis if recordedChunks or sampleRate change
+    }, [analyzer, shouldAnalyze]); // Re-run analysis if recordedChunks or sampleRate change
 
     if (loading) {
         return <p>Analyzing recording...</p>;
-    }
-
-    if (error) {
-        return <p>Error: {error}</p>;
     }
 
     if (results) {
@@ -111,6 +102,15 @@ const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, reco
             </div>
         );
     }
+
+    if (!shouldAnalyze) {
+        return <div><p>Start recording to analyze your speech!</p></div>
+    }
+
+    if (error) {
+        return <p>Error: {error}</p>;
+    }
+
 
     return <></>; // Or some other default state
 };

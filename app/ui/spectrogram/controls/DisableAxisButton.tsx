@@ -10,6 +10,6 @@ export const DisableAxisButton = () => {
 
 
     return <StandardSpectrogramButton onClick={() => setIsOverlayEnabled(!isOverlayEnabled)}>
-        {isOverlayEnabled ? 'Disable Y-Axis' : 'Enable Y-Axis'}
+        {isOverlayEnabled ? 'Disable Overlay' : 'Enable Overlay'}
     </StandardSpectrogramButton>
 }

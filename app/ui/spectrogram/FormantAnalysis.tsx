@@ -209,7 +209,7 @@ const ExpandedWordDisplay = ({wordWithFormants, onFormantClick, comparisonType}:
 };
 
 
-const FormantAnalysis = ({analyzedWords}: { analyzedWords: WordWithFormants[] }) => {
+const FormantAnalysis = ({analyzedWords}: { analyzedWords: WordWithFormants[] | null }) => {
     const [expandedWord, setExpandedWord] = useState<string | null>(null);
     const [selectedFormant, setSelectedFormant] = useState<('f0_hz' | 'f1_hz' | 'f2_hz' | 'f3_hz') | null>(null);
     const [comparisonType, setComparisonType] = useState<'feminine' | 'masculine' | null>('feminine'); // Default to 'feminine'
@@ -236,6 +236,10 @@ const FormantAnalysis = ({analyzedWords}: { analyzedWords: WordWithFormants[] })
     const handleCloseFormantDetail = () => {
         setSelectedFormant(null);
     };
+
+    if (!analyzedWords) {
+        return <div><p>Start recording to analyze your speech!</p></div>
+    }
 
     const currentWordData = analyzedWords.find((w) => w.word === expandedWord);
     const currentAverageData = currentWordData ? wordDatabase[currentWordData.word.toLowerCase()] : undefined;
