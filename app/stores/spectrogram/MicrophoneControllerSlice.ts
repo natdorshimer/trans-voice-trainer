@@ -35,8 +35,11 @@ export const createMicrophoneControllerSlice: StoreSlice<MicrophoneController, M
         }));
     },
     reloadMicrophone: () => {
-        const state = get()
-        state.disableUserMicrophone()
-        state.enableUserMicrophone()
+        const state = get();
+        const isEnabled = state.userMicrophone?.enabled || false;
+        if (isEnabled) {
+            state.disableUserMicrophone();
+            state.enableUserMicrophone();
+        }
     }
 })
