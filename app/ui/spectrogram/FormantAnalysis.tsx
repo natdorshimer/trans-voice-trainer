@@ -1,18 +1,13 @@
 import React, {useState} from "react";
 import wd from 'public/formant_data.json';
+import {useHeatmapSettingsStore} from "@/app/providers/HeatmapSettingsProvider";
+import {FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 
-export interface WordWithFormants extends Formants {
+export interface WordWithFormants extends FormantData {
     word: string;
 }
 
-interface Formants {
-    f0_hz: number;
-    f1_hz: number;
-    f2_hz: number;
-    f3_hz: number;
-}
-
-interface DatabaseFormants extends Formants {
+interface DatabaseFormants extends FormantData {
     num_samples: number;
 }
 
@@ -52,7 +47,7 @@ const getFormantColor = (current: number, target: number | undefined, type: 'fem
 
 interface SmallWordDisplayProps {
     wordWithFormants: WordWithFormants;
-    onBoxClick: (word: string) => void;
+    onBoxClick: (wordWithFormants: WordWithFormants) => void;
     onFormantClick: (formant: 'f0_hz' | 'f1_hz' | 'f2_hz' | 'f3_hz', word: string) => void;
     comparisonType: 'feminine' | 'masculine' | null;
 }
@@ -63,7 +58,7 @@ const SmallWordDisplay = ({wordWithFormants, onBoxClick, onFormantClick, compari
 
     return (
         <button className="p-2 rounded-md bg-zinc-700 hover:bg-zinc-500 text-white inline-block mr-2 mb-2"
-                onClick={() => onBoxClick(word)}>
+                onClick={() => onBoxClick(wordWithFormants)}>
             <div className="font-semibold mb-1">{word}</div>
             <div className="flex space-x-1">
                 <div
@@ -218,14 +213,24 @@ const FormantAnalysis = ({analyzedWords}: { analyzedWords: WordWithFormants[] })
     const [expandedWord, setExpandedWord] = useState<string | null>(null);
     const [selectedFormant, setSelectedFormant] = useState<('f0_hz' | 'f1_hz' | 'f2_hz' | 'f3_hz') | null>(null);
     const [comparisonType, setComparisonType] = useState<'feminine' | 'masculine' | null>('feminine'); // Default to 'feminine'
+    const setSelectedFormantForHeatmap = useHeatmapSettingsStore(state => state.setSelectedFormant)
 
     const handleFormantClick = (formant: 'f0_hz' | 'f1_hz' | 'f2_hz' | 'f3_hz', word: string) => {
         setSelectedFormant(formant);
         setExpandedWord(word);
     };
 
-    const onBoxClick = (word: string) => {
-        setExpandedWord(word);
+    const onBoxClick = (wordWithFormants: WordWithFormants) => {
+        setExpandedWord(wordWithFormants.word);
+        console.log("Selected word ", wordWithFormants.word);
+        const gender = comparisonType || 'feminine';
+        if (wordDatabase) {
+            const foundWord = wordDatabase[wordWithFormants.word];
+            const formantData = foundWord && foundWord[gender] || null;
+            if (!formantData) return;
+            const { num_samples, ...simpleFormantData } = formantData;
+            setSelectedFormantForHeatmap(simpleFormantData)
+        }
     };
 
     const handleCloseFormantDetail = () => {

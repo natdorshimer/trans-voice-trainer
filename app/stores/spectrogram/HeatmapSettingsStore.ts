@@ -3,6 +3,7 @@ import {devtools} from "zustand/middleware";
 
 import {useHeatmapSettingsStore} from "../../providers/HeatmapSettingsProvider";
 import {Color, Scale, scale} from "chroma.ts";
+import {FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 
 export interface HeatmapSettings {
     max: number
@@ -10,6 +11,7 @@ export interface HeatmapSettings {
     isEnabled: boolean
     upperFrequency: number
     isOverlayEnabled: boolean
+    selectedFormant: FormantData | null
 }
 
 export interface HeatmapSettingsController {
@@ -18,6 +20,7 @@ export interface HeatmapSettingsController {
     setIsEnabled: (_: boolean) => void,
     setUpperFrequency: (_: number) => void,
     setIsOverlayEnabled: (_: boolean) => void,
+    setSelectedFormant: (_: FormantData) => void,
 }
 
 export type HeatmapSettingsStore = HeatmapSettings & HeatmapSettingsController
@@ -36,6 +39,8 @@ export const createHeatmapSettingsStore = () => create<HeatmapSettingsStore>(dev
     setUpperFrequency: (upperFrequency) => set(state => ({...state, upperFrequency})),
     isOverlayEnabled: true,
     setIsOverlayEnabled: (newState: boolean) => set(state => ({...state, isOverlayEnabled: newState})),
+    selectedFormant: null,
+    setSelectedFormant: (newState: FormantData) => set(state => ({...state, selectedFormant: newState}))
 })))
 
 export const useHeatmapSettings = () => useHeatmapSettingsStore(state => state as HeatmapSettings)

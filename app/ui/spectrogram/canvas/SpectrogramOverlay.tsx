@@ -1,5 +1,6 @@
 // SpectrogramOverlay.tsx
 import React, { useEffect, useRef } from 'react';
+import {drawFormants, FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 
 interface SpectrogramOverlayProps {
     height: number;
@@ -9,6 +10,8 @@ interface SpectrogramOverlayProps {
     disableOverlay?: boolean;
     spectrogramWidth: number;
     upperFrequency: number; // Receive the upper frequency
+    selectedFormant: FormantData | null;
+    canvasHeight: number;
 }
 
 export const LABEL_OFFSET = 60;
@@ -21,6 +24,8 @@ export const SpectrogramOverlay: React.FC<SpectrogramOverlayProps> = ({
                                                                           disableOverlay = false,
                                                                           spectrogramWidth,
                                                                           upperFrequency, // Receive upper frequency
+                                                                          selectedFormant,
+                                                                          canvasHeight
                                                                       }) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -60,6 +65,8 @@ export const SpectrogramOverlay: React.FC<SpectrogramOverlayProps> = ({
         ctx.lineTo(0, canvas.height);
         ctx.stroke();
 
+        selectedFormant && drawFormants(selectedFormant, canvasHeight, upperFrequency, ctx, 20);
+
         // Calculate frequency label positions for the visible range
         for (let i = 0; i <= numLabels; i++) {
             const normalizedY = i / numLabels;
@@ -84,7 +91,7 @@ export const SpectrogramOverlay: React.FC<SpectrogramOverlayProps> = ({
             // Draw label
             ctx.fillText(label, tickLength + 5, y);
         }
-    }, [height, frequencyResolution, sampleRate, fftSize, disableOverlay, spectrogramWidth, upperFrequency]);
+    }, [height, frequencyResolution, sampleRate, fftSize, disableOverlay, spectrogramWidth, upperFrequency, selectedFormant]);
 
     return (
         <canvas

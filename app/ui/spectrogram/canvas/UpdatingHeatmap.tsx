@@ -19,6 +19,7 @@ export interface UpdatingHeatmapProps {
     upperFrequency: number;
     areFormantsVisible: boolean; // Add formant visibility
     formantData: CircularBuffer<FormantData> | null; // Add formant data
+    selectedFormant: FormantData | null;
 }
 
 export interface FormantData {
@@ -56,6 +57,7 @@ export const UpdatingHeatmap: React.FC<UpdatingHeatmapProps> = ({
                                                                     upperFrequency,
                                                                     areFormantsVisible, // Receive formant visibility
                                                                     formantData,       // Receive formant data
+                                                                    selectedFormant,
                                                                     ...props
                                                                 }) => {
     const contextToTick = ({ context }: CanvasState) => useAnimateShiftLeftAndDrawColumn(
@@ -82,6 +84,8 @@ export const UpdatingHeatmap: React.FC<UpdatingHeatmapProps> = ({
                 disableOverlay={disableOverlay}
                 spectrogramWidth={canvasProps.width!}
                 upperFrequency={upperFrequency}
+                selectedFormant={selectedFormant}
+                canvasHeight={canvasProps.height!}
             />
         </div>
     );
@@ -141,6 +145,18 @@ function average(data: number[]): number {
     return data.reduce((a: number, b: number) => a + b, 0) / data.length;
 }
 
+export function drawFormants(entry: FormantData, canvasHeight: number, upperFrequency: number, ctx: CanvasRenderingContext2D, offset: number = 70) {
+    Object.entries(entry).forEach(([formant, frequency]) => {
+        if (frequency > 0) {
+            const y = canvasHeight - (frequency / upperFrequency) * canvasHeight - FORMANT_INDICATOR_HEIGHT / 2;
+            const color = (formantColors as any)[formant] || 'white';
+
+            ctx.fillStyle = color;
+            ctx.fillRect(ctx.canvas.width - offset, y, FORMANT_INDICATOR_WIDTH, FORMANT_INDICATOR_HEIGHT);
+        }
+    });
+}
+
 const drawColumn = (
     ctx: CanvasRenderingContext2D,
     drawData: UpdatingHeatmapDrawData,
@@ -179,15 +195,7 @@ const drawColumn = (
     // Draw formant indicators on the spectrogram
     const entry = formantData && getAverageFormants(formantData);
     if (areFormantsVisible && entry) {
-        Object.entries(entry).forEach(([formant, frequency]) => {
-            if (frequency > 0) {
-                const y = canvasHeight - (frequency / upperFrequency) * canvasHeight - FORMANT_INDICATOR_HEIGHT / 2;
-                const color = (formantColors as any)[formant] || 'white';
-
-                ctx.fillStyle = color;
-                ctx.fillRect(ctx.canvas.width - 60, y, FORMANT_INDICATOR_WIDTH, FORMANT_INDICATOR_HEIGHT);
-            }
-        });
+        drawFormants(entry, canvasHeight, upperFrequency, ctx);
     }
 };
 

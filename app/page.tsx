@@ -16,6 +16,7 @@ const Spectrogram = () => {
         upperFrequency,
         formantData,
         isHeatmapEnabled,
+        selectedFormant,
         ...heatmapProps
     } = useSpectrogram();
     const { sampleRate, fftSize } = useMicrophoneStore(state => ({
@@ -36,6 +37,7 @@ const Spectrogram = () => {
                 upperFrequency={upperFrequency} // Pass the upper frequency
                 formantData={formantData || null}
                 areFormantsVisible={isOverlayEnabled}
+                selectedFormant={selectedFormant}
             />
         </div>
     );

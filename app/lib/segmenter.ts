@@ -33,7 +33,6 @@ async function kaldiRecognizerSync(model: Model, ctx: AudioContext, samples: Flo
         const recognizer = new model.KaldiRecognizer(ctx.sampleRate);
         recognizer.setWords(true)
         recognizer.on("result", (message) => {
-            console.log(`Result: ${(message as ServerMessageResult).result.result}`);
             resolve(message as ServerMessageResult);
         });
 

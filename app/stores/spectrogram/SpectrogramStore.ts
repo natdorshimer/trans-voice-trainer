@@ -70,21 +70,24 @@ export const useSpectrogram = () => {
     }))
 
 
-    const fullHeight = userMicrophone?.analyserNode?.frequencyBinCount || fftSize / 2;
-    const frequencyResolution = sampleRate / fftSize;
+    // const fullHeight = userMicrophone?.analyserNode?.frequencyBinCount || fftSize / 2;
+    // const frequencyResolution = sampleRate / fftSize;
 
-    const isOverlayEnabled = useHeatmapSettingsStore(state => state.isOverlayEnabled);
+    const {isOverlayEnabled, upperFrequency, isHeatmapEnabled, selectedFormant} = useHeatmapSettingsStore(state => ({
+        isOverlayEnabled: state.isOverlayEnabled,
+        upperFrequency: state.upperFrequency,
+        isHeatmapEnabled: state.isEnabled,
+        selectedFormant: state.selectedFormant
+    }));
 
-    const upperFrequency = useHeatmapSettingsStore(state => state.upperFrequency);
     // Calculate the number of frequency bins to represent the desired range
-    const visibleFrequencyBins = Math.floor(upperFrequency / frequencyResolution);
+    // const visibleFrequencyBins = Math.floor(upperFrequency / frequencyResolution);
     // const height = Math.min(fullHeight, visibleFrequencyBins);
 
     const height = 512;
     const heatmapSettings = useHeatmapSettings()
     const {containerWidth, containerRef} = useDivSize();
 
-    const isHeatmapEnabled = useHeatmapSettingsStore(state => state.isEnabled)
 
     return {
         canvasProps: {
@@ -102,5 +105,6 @@ export const useSpectrogram = () => {
         upperFrequency,
         formantData: userMicrophone?.currentFormants,
         isHeatmapEnabled,
+        selectedFormant
     }
 }
