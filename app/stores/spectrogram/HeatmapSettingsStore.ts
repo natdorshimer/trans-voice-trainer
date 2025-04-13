@@ -26,7 +26,7 @@ export interface HeatmapSettingsController {
 export type HeatmapSettingsStore = HeatmapSettings & HeatmapSettingsController
 
 export const createHeatmapSettingsStore = () => create<HeatmapSettingsStore>(devtools(set => ({
-    max: 100,
+    max: 180,
     setMax: (max) => set(state => ({...state, max})),
     gradientScale: scale('Viridis'),
     setGradientScale: (gradientScaleStr) => set(state => ({

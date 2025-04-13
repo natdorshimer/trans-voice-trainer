@@ -1,6 +1,5 @@
 import type { NextConfig } from 'next';
 
-console.log(process.env.NODE_ENV);
 const nextConfig: NextConfig = {
     reactStrictMode: true,
     output: "export",

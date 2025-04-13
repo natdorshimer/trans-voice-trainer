@@ -178,7 +178,8 @@ const drawColumn = (
             const startingIndexAtPixel = Math.floor(startingIndex + i * numIndexesPerPixel);
             const pixelData = columnToDraw.slice(startingIndexAtPixel, startingIndexAtPixel + Math.max(1, Math.floor(numIndexesPerPixel)));
             const magnitude = average(pixelData);
-            const alpha = magnitude / heatmapSettings.max;
+            const alpha = Math.pow(magnitude, 2) / Math.pow(heatmapSettings.max, 2);
+            // const alpha = magnitude / heatmapSettings.max;
 
             if (alpha === undefined || alpha < 0) {
                 throw new Error("the fuck?");

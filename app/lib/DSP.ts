@@ -116,7 +116,6 @@ function estimateF0(essentia: Essentia, segmentSamples: Float32Array, sampleRate
         );
         const detectedPitch = pitchResult.pitch ?? 0;
         if (detectedPitch < 75 || detectedPitch > 500) {
-            console.log("Undetected Pitch.", detectedPitch);
             return 0;
         }
         return detectedPitch;

@@ -20,7 +20,6 @@ export const enableUserMicrophone = async (
         });
 
     const audioCtx = new AudioContext({sampleRate: settings.sampleRate})
-    console.log(`sample rate: ${audioCtx.sampleRate}`)
 
     await audioCtx.audioWorklet.addModule('audio/recorder-processor.js')
 
@@ -47,7 +46,6 @@ export const enableUserMicrophone = async (
             //TODO: Move to processor!
             quietNumber = energy <= 0.01 ? quietNumber + 1 : 0;
             if (quietNumber < 5) {
-                console.log(energy);
                 formantData.push(await computeFormantsBase(essentia, event.data.samples, audioCtx.sampleRate));
             } else {
                 formantData.clear();

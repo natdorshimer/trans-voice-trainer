@@ -23,6 +23,14 @@ interface WordDatabase {
 const wordDatabase: WordDatabase = wd as unknown as WordDatabase;
 
 const getHelperText = (formantValue: number, targetFormant: number, gender: string, formant: string) => {
+    if (formant === 'f0_hz') {
+        return `This is just pitch! Simply just try to go ${formantValue > targetFormant ? 'lower' : 'higher'}`;
+    }
+
+    if (formant === 'f1_hz') {
+
+    }
+
     return `Placeholder text for ${formant} for ${gender}. Your value: ${formantValue}, Target: ${targetFormant}`;
 };
 
