@@ -24,14 +24,14 @@ const wordDatabase: WordDatabase = wd as unknown as WordDatabase;
 
 const getHelperText = (formantValue: number, targetFormant: number, gender: string, formant: string) => {
     if (formant === 'F0') {
-        return `This is just pitch! Just try to go ${formantValue > targetFormant ? 'lower' : 'higher'}. Don't worry too much about pitch - this is not the most important part about what makes your voice feminine or masculine!`;
+        return <p>{`This is just pitch! Just try to go ${formantValue > targetFormant ? 'lower' : 'higher'}. Don't worry too much about pitch - this is not the most important part about what makes your voice feminine or masculine!`}</p>;
     }
 
     if (formant === 'F1') {
-        return 'F1 test'
+        return <p>F1 is the <b>most important</b>. Make the cavity of your throat smaller. Try panting like a big dog and then transitioning to panting like a small dog - that will give you a feeling of a higher F1. Then transition into vowels, like pa- or part. I highly recommend the <a className='text-blue-300' href='https://www.youtube.com/watch?v=BW8X2nXexQs'>Trans Voice Lessons video</a> on this topic!</p>
     }
 
-    return `Placeholder text for ${formant} for ${gender}. Your value: ${formantValue}, Target: ${targetFormant}`;
+    return <p>{`Placeholder text for ${formant} for ${gender}. Your value: ${formantValue}, Target: ${targetFormant}`}</p>;
 };
 
 const getFormantColor = (current: number, target: number | undefined, type: 'feminine' | 'masculine'): string => {
@@ -208,9 +208,9 @@ const FormantDetailWindow = ({
                         <span className="font-semibold">Confidence: </span>
                         <span>{averageData[comparisonType]!.num_samples >= 100 ? "High" : "Low"} ({averageData[comparisonType]!.num_samples} samples)</span>
                     </div>
-                    <p className="text-sm mt-2">
+                    <div className="text-sm mt-2">
                         {getHelperText(currentFormantValue, averageData[comparisonType]![formant]!, comparisonType, formantLabel)}
-                    </p>
+                    </div>
                 </div>
             ) : (
                 <>
