@@ -23,7 +23,15 @@ interface WordDatabase {
 const wordDatabase: WordDatabase = wd as unknown as WordDatabase;
 
 const getHelperText = (formantValue: number, targetFormant: number, gender: string, formant: string) => {
-    return `Placeholder text for ${formant} for ${gender}. Your value: ${formantValue}, Target: ${targetFormant}`;
+    if (formant === 'F0') {
+        return <p>{`This is just pitch! Just try to go ${formantValue > targetFormant ? 'lower' : 'higher'}. Don't worry too much about pitch - this is not the most important part about what makes your voice feminine or masculine!`}</p>;
+    }
+
+    if (formant === 'F1') {
+        return <p>F1 is the <b>most important</b>. Make the cavity of your throat smaller. Try panting like a big dog and then transitioning to panting like a small dog - that will give you a feeling of a higher F1. Then transition into vowels, like pa- or part. I highly recommend the <a className='text-blue-300' href='https://www.youtube.com/watch?v=BW8X2nXexQs'>Trans Voice Lessons video</a> on this topic!</p>
+    }
+
+    return <p>{`Placeholder text for ${formant} for ${gender}. Your value: ${formantValue}, Target: ${targetFormant}`}</p>;
 };
 
 const getFormantColor = (current: number, target: number | undefined, type: 'feminine' | 'masculine'): string => {
@@ -171,39 +179,49 @@ const FormantDetailWindow = ({
 
     return (
         <div
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-900 text-white p-6 rounded-md shadow-lg z-10">
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-900 text-white p-6 rounded-md shadow-lg z-10 text-center">
             <h2 className="text-xl font-semibold mb-4">{word} - {formantLabel} Details</h2>
             {averageData && averageData[comparisonType] ? (
-                <div className="mb-2">
-                    <h3 className={`font-semibold capitalize`}>{comparisonType} Comparison</h3>
-                    <p>
-                        Your Value: <span
-                        className={getFormantColor(currentFormantValue, averageData[comparisonType]![formant], comparisonType)}>{currentFormantValue}</span>
-                    </p>
-                    <p>Target: {averageData[comparisonType]![formant]}</p>
-                    <p>
-                        Difference: <span
-                        className={getFormantColor(currentFormantValue, averageData[comparisonType]![formant], comparisonType)}>
-                            {(currentFormantValue - averageData[comparisonType]![formant]!).toFixed(2)}
-                        </span>
-                    </p>
-                    <p className="text-sm mt-1">
+                <div className="mb-4">
+                    <h3 className={`font-semibold capitalize text-lg mb-2`}>{comparisonType} Comparison</h3>
+                    <div className="flex space-x-2 mb-2">
+                        <div className="bg-zinc-800 rounded-md p-2 flex-1">
+                            <div className="font-semibold text-sm text-center">Your Value</div>
+                            <div
+                                className={`text-center ${getFormantColor(currentFormantValue, averageData[comparisonType]![formant], comparisonType)}`}>
+                                {currentFormantValue} hz
+                            </div>
+                        </div>
+                        <div className="bg-zinc-800 rounded-md p-2 flex-1">
+                            <div className="font-semibold text-sm text-center">Target Value</div>
+                            <div className="text-center">{averageData[comparisonType]![formant]!.toFixed(0)} hz</div>
+                        </div>
+                    </div>
+                    <div>
+                        <span className="font-semibold">Difference: </span>
+                        <span
+                            className={getFormantColor(currentFormantValue, averageData[comparisonType]![formant], comparisonType)}>
+                    {(currentFormantValue - averageData[comparisonType]![formant]!).toFixed(0)} hz
+                </span>
+                    </div>
+                    <div>
+                        <span className="font-semibold">Confidence: </span>
+                        <span>{averageData[comparisonType]!.num_samples >= 100 ? "High" : "Low"} ({averageData[comparisonType]!.num_samples} samples)</span>
+                    </div>
+                    <div className="text-sm mt-2">
                         {getHelperText(currentFormantValue, averageData[comparisonType]![formant]!, comparisonType, formantLabel)}
-                    </p>
-                    <p className="text-sm mt-1">
-                        Confidence: {averageData[comparisonType]!.num_samples >= 100 ? "High" : "Low"} ({averageData[comparisonType]!.num_samples} samples)
-                    </p>
+                    </div>
                 </div>
             ) : (
                 <>
-                    <p className="mb-2">Value: {currentFormantValue}</p>
+                    <p className="mb-2">Value: {currentFormantValue} hz</p>
                     <p className="italic text-sm">
                         No {comparisonType} formant data available for this word.
                     </p>
                 </>
             )}
             <button onClick={onClose}
-                    className="bg-zinc-600 hover:bg-zinc-500 text-white py-2 px-4 rounded-md focus:outline-none">
+                    className="bg-zinc-600 hover:bg-zinc-500 text-white py-2 px-4 rounded-md focus:outline-none mt-2">
                 Close
             </button>
         </div>
