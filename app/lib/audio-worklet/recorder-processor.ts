@@ -27,7 +27,7 @@ class RecorderProcessor extends AudioWorkletProcessor {
         return true;
     }
 
-    private getFormants(samples) {
+    private getFormants(samples: Float32Array) {
         const energy = samples.reduce((prev, curr) => prev + Math.pow(curr, 2));
         this.quietNumber = energy <= 0.01 ? this.quietNumber + 1 : 0;
         if (this.quietNumber > 5) {

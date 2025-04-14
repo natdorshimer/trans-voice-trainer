@@ -7,7 +7,7 @@ import React from "react";
 import {UpdatingHeatmap} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {Controls} from "@/app/ui/spectrogram/controls/Controls";
 import {AnalyzeRecording} from "@/app/ui/AnalyzeRecording";
-import {FormantPanel} from "@/app/ui/FormantAdviceWindow";
+import {AdvicePanel} from "@/app/ui/FormantAdviceWindow";
 
 
 const Spectrogram = () => {
@@ -37,7 +37,7 @@ function SpecPlus() {
                     <Spectrogram/>
                 </div>
             </header>
-            {/*<FormantPanel/>*/}
+            <AdvicePanel/>
             <div className="p-5 md:px-2 gap-3 flex flex-col md:flex-row items-start"> {/* Default to col, row on md+ */}
                 <div className="flex-1 w-full"> {/* Ensure children take full width in column layout */}
                     <Controls/>

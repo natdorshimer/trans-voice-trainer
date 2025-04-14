@@ -1,5 +1,6 @@
 import React, {ChangeEvent, ChangeEventHandler} from "react";
 import {useHeatmapSettingsStore} from "@/app/providers/HeatmapSettingsProvider";
+import {ALPHA_MAX} from "@/app/stores/spectrogram/HeatmapSettingsStore";
 
 const Slider = ({onChange, defaultValue, value, max}: {
     onChange: (evt: Event, newValue: number | number[]) => void,
@@ -33,16 +34,16 @@ export const MaxValueSlider = () => {
     }))
 
     const onChange = (evt: Event, newValue: number | number[]) => {
-        setMaxValue(newValue as number)
+        setMaxValue(Math.max(1, ALPHA_MAX - (newValue as number)))
     }
 
     return <div className="flex pt-2">
         <label className="text-white mb-2 pr-2">Alpha Scale</label>
         <Slider
             onChange={onChange}
-            defaultValue={maxValue}
-            value={maxValue}
-            max={100}
+            defaultValue={ALPHA_MAX/2}
+            value={ALPHA_MAX - maxValue}
+            max={ALPHA_MAX}
         />
     </div>
 }

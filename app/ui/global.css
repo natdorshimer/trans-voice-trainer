@@ -41,4 +41,3 @@ input[type='number']::-webkit-outer-spin-button {
     border-bottom: 0.5em solid currentColor; /* Use current text color */
     top: 0.4em;
 }
-

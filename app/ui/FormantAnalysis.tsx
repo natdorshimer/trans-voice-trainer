@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import wd from '@/public/formant_data.json';
 import {useHeatmapSettingsStore} from "@/app/providers/HeatmapSettingsProvider";
 import {FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
+import {A} from "@/app/ui/A";
 
 export interface WordWithFormants extends FormantData {
     word: string;
@@ -22,23 +23,20 @@ interface WordDatabase {
 
 const wordDatabase: WordDatabase = wd as unknown as WordDatabase;
 
-const getHelperText = (formantValue: number, targetFormant: number, gender: string, formant: string) => {
-    const isInBounds = inBounds(formantValue, targetFormant, gender);
-
+export const HelperText = ({formant}: {formant: string}) => {
     if (formant === 'F0') {
-        const helperText = isInBounds ?
-            'Your pitch is looking good!' :
-            (isInBounds === false ? `Just try to go ${formantValue > targetFormant ? 'lower' : 'higher'}` : '')
-        return <p>{`This is just pitch! ${helperText}. But don't worry too much about pitch - this is not the most important part about what makes your voice feminine or masculine!`}</p>;
+        // const helperText = isInBounds ?
+        //     'Your pitch is looking good!' :
+        //     (isInBounds === false ? `Just try to go ${formantValue > targetFormant ? 'lower' : 'higher'}` : '')
+        // return <p>{`This is just pitch! ${helperText}. But don't worry too much about pitch - this is not the most important part about what makes your voice feminine or masculine!`}</p>;
+        return <p>Raising pitch is easy, but raising pitch without also lowering the <b>weight</b> can put strain on your voice and make talking in a higher pitch uncomfortable and unsustainable. <A href='https://www.youtube.com/watch?v=BfCS01MkbIY'>This video</A> acts as an amazing resource for modifying pitch in a comfortable, sustainable way.</p>;
     }
 
     if (formant === 'F1') {
-        // Currently just feminine
-        return <p>F1 is the <b>most important</b>. It's all about making the cavity of your <b>throat</b> smaller. Try panting like a big dog and then transitioning to panting like a small dog - that will give you a feeling of a higher F1. Then transition into vowels, like pa- or part. I highly recommend the <a className='text-blue-300' href='https://www.youtube.com/watch?v=BW8X2nXexQs'>Trans Voice Lessons video</a> on this topic!</p>
+        return <p>F1 is the <b>most important</b>. It's all about making the cavity of your <b>throat</b> smaller. Try panting like a big dog and then transitioning to panting like a small dog - that will give you a feeling of a higher F1. Then transition into vowels, like ha- or hat. I highly recommend the <A href='https://youtu.be/BW8X2nXexQs?t=375'>Trans Voice Lessons video</A> on this topic!</p>
     }
 
     if (formant === 'F2') {
-        // Currently just feminine
         return <p>F2 is brightness! This is all about reducing the space in your <b>mouth</b>. The smaller the space at the front of your mouth, the brighter the sound! Make an 'ee' sound like 'key' and feel how your tongue touches the top of your mouth and constricts the space there with the 'k' sound. Now when the 'ee' comes out, try not to lower the arch of the tongue much, and try to move your tongue more forward and closer to your teeth! Now, the trick (and hard part) is to emulate that feeling of a constricted mouth space for other sounds.</p>
     }
 
@@ -46,7 +44,32 @@ const getHelperText = (formantValue: number, targetFormant: number, gender: stri
         return <p>F3 contributes less than F1 and F2, but it still plays a minor part in voice training. Spreading your lips in a wide smile will result in a slightly brighter sound as well as moving your tongue more forward in your mouth (like with F2) will also raise F3.</p>
     }
 
-    return <p>{`Placeholder text for ${formant} for ${gender}. Your value: ${formantValue}, Target: ${targetFormant}`}</p>;
+    throw new Error('Formant not found!');
+};
+
+
+const HelperTextExtra = ({formant} : {formant: string}) => {
+    if (formant === 'F0') {
+        return <p><br/>It's important to make sure that your voice is lighter as you're going up in pitch. <A href='https://youtu.be/BfCS01MkbIY?t=394'>This clip</A> will provide you with an exercise to go up in pitch while also reducing weight. Give it a shot!</p>;
+    }
+
+    if (formant === 'F1') {
+        //https://youtu.be/oWmj73Ttp4E?t=347
+        return <p><br/><A href='https://youtu.be/oWmj73Ttp4E?t=347'>This clip</A> shows what modifying your F1 will sound like if you kept the other formants the same. This is modifying the space in your throat does to your voice! After the big dog small dog exercises, try to follow along here.</p>
+    }
+
+    if (formant === 'F2') {
+        return <p><br/><A href='https://youtu.be/oWmj73Ttp4E?t=234'>This clip</A> shows what modifying your F2 will sound like keeping every other formant the same. All it involves is making your mouth cavity smaller through tongue position and mouth shape. Try imitating it!</p>
+    }
+
+    return <></>
+}
+
+export const HelperTextExpanded = ({formant}:{formant: string}) => {
+    return <div>
+        <HelperText formant={formant}/>
+        <HelperTextExtra formant={formant}/>
+    </div>
 };
 
 const inBounds = (current: number, target: number | undefined, gender: string) => {
@@ -230,7 +253,7 @@ const FormantDetailWindow = ({
                         <span>{averageData[comparisonType]!.num_samples >= 100 ? "High" : "Low"} ({averageData[comparisonType]!.num_samples} samples)</span>
                     </div>
                     <div className="text-sm mt-2">
-                        {getHelperText(currentFormantValue, averageData[comparisonType]![formant]!, comparisonType, formantLabel)}
+                        <HelperText formant={formantLabel}/>
                     </div>
                 </div>
             ) : (

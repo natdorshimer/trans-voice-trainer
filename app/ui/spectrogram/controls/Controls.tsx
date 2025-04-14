@@ -32,8 +32,9 @@ export const Controls = () => {
                         <div>
                             <DisableHeatmapButton/>
                             <DisableAxisButton/>
-                            <HeatmapDisplayFrequencyControl/>
                             <MaxValueSlider/>
+                            <HeatmapDisplayFrequencyControl/>
+                            <SampleRateSelectionField/>
                         </div>
                     )}
                 </div>

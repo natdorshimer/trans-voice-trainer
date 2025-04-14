@@ -23,10 +23,12 @@ export interface HeatmapSettingsController {
     setSelectedFormant: (_: FormantData) => void,
 }
 
+export const ALPHA_MAX = 200;
+
 export type HeatmapSettingsStore = HeatmapSettings & HeatmapSettingsController
 
 export const createHeatmapSettingsStore = () => create<HeatmapSettingsStore>(devtools(set => ({
-    max: 180,
+    max: ALPHA_MAX/2,
     setMax: (max) => set(state => ({...state, max})),
     gradientScale: scale('Viridis'),
     setGradientScale: (gradientScaleStr) => set(state => ({

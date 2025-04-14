@@ -1,4 +1,6 @@
 import React, {useState} from "react";
+import {A} from "@/app/ui/A";
+import {HelperText, HelperTextExpanded} from "@/app/ui/FormantAnalysis";
 
 interface FormantAdviceWindowProps {
     formant: string
@@ -11,9 +13,9 @@ interface SupportingFormantInfoProps {
 const SupportingFormantInfo: React.FC<SupportingFormantInfoProps> = ({formant}) => {
     switch (formant) {
         case 'F0':
-            return <p>Raising pitch is easy, but raising pitch without also lowering the <i>weight</i> can put strain on your voice and make talking in a higher pitch uncomfortable and unsustainable. This video acts as an amazing resource for modifying pitch in a comfortable, sustainable way. <a href='https://www.youtube.com/watch?v=BfCS01MkbIY'/> </p>
+            return <p>Raising pitch is easy, but raising pitch without also lowering the <b>weight</b> can put strain on your voice and make talking in a higher pitch uncomfortable and unsustainable. <A href='https://www.youtube.com/watch?v=BfCS01MkbIY'>This video</A> acts as an amazing resource for modifying pitch in a comfortable, sustainable way.</p>
         case 'F1':
-            return <p></p>
+            return <p>F1 is the <b>most important</b>. It's all about making the cavity of your <b>throat</b> smaller. Try panting like a big dog and then transitioning to panting like a small dog - that will give you a feeling of a higher F1. Then transition into vowels, like pa- or part. I highly recommend the <A href='https://youtu.be/BW8X2nXexQs?t=375'>Trans Voice Lessons video</A> on this topic!</p>
         case 'F2':
             return <p></p>
         case 'F3':
@@ -48,7 +50,7 @@ interface FormantAdviceButton {
     setFormant: (formant: string) => void;
 }
 
-export const FormantPanel = () => {
+export const AdvicePanel = () => {
     const formants = ['F0', 'F1', 'F2', 'F3'];
     const [formant, setFormant] = useState<string | null>(null);
     const onWindowClose = () => setFormant(null);
@@ -63,7 +65,7 @@ export const FormantPanel = () => {
                 />)
         }
         {formant ? <FormantAdviceWindow onClose={onWindowClose} formant={formant}>
-            <SupportingFormantInfo formant={formant}/>
+            <HelperTextExpanded formant={formant}/>
     </FormantAdviceWindow> : null
         }
     </div>

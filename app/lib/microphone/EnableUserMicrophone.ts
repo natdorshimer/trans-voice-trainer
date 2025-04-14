@@ -14,10 +14,11 @@ export const enableUserMicrophone = async (
                 echoCancellation: false,
                 noiseSuppression: false,
                 channelCount: 1,
+                sampleRate: settings.sampleRate
             }
         });
 
-    const audioCtx = new AudioContext()
+    const audioCtx = new AudioContext({sampleRate: settings.sampleRate})
     await audioCtx.audioWorklet.addModule('audio/recorder-processor.js')
 
     const streamSource = audioCtx.createMediaStreamSource(stream)
