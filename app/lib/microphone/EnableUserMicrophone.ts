@@ -1,6 +1,5 @@
 import {UserMicrophone} from "@/app/lib/microphone/UserMicrophone";
 import {AudioSettings} from "@/app/stores/spectrogram/AudioSettingsSlice";
-import {computeFormantsBase, getEssentia} from "@/app/lib/DSP";
 import {FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {CircularBuffer} from "@/app/lib/CircularBuffer";
 
@@ -12,18 +11,17 @@ export const enableUserMicrophone = async (
         .mediaDevices
         .getUserMedia({
             audio: {
-                echoCancellation: true,
-                noiseSuppression: true,
+                echoCancellation: false,
+                noiseSuppression: false,
                 channelCount: 1,
-                sampleRate: settings.sampleRate,
             }
         });
 
-    const audioCtx = new AudioContext({sampleRate: settings.sampleRate})
-
+    const audioCtx = new AudioContext()
     await audioCtx.audioWorklet.addModule('audio/recorder-processor.js')
 
     const streamSource = audioCtx.createMediaStreamSource(stream)
+
     const analyserNode = audioCtx.createAnalyser()
 
     const recorderNode = new AudioWorkletNode(audioCtx, 'recorder-processor')
@@ -31,22 +29,17 @@ export const enableUserMicrophone = async (
     streamSource.connect(analyserNode)
     streamSource.connect(recorderNode)
 
-    const essentia = await getEssentia();
-
     const recordedChunks = previousChunks || new CircularBuffer<Float32Array>(60 * 10);
     const formantData = new CircularBuffer<FormantData>(20);
 
-    let quietNumber = 0;
     recorderNode.port.onmessage = async (event) => {
         if (event.data.type === 'data') {
-            const float32Samples = new Float32Array(event.data.samples);
-            const energy = float32Samples.reduce((prev, curr) => prev + Math.pow(curr, 2));
-            recordedChunks.push(new Float32Array(event.data.samples));
+            const samples: Float32Array = event.data.samples;
+            recordedChunks.push(samples);
 
-            //TODO: Move to processor!
-            quietNumber = energy <= 0.01 ? quietNumber + 1 : 0;
-            if (quietNumber < 5) {
-                formantData.push(await computeFormantsBase(essentia, event.data.samples, audioCtx.sampleRate));
+            const formants: FormantData | null = event.data.formants;
+            if (formants) {
+                formantData.push(event.data.formants);
             } else {
                 formantData.clear();
             }
@@ -62,9 +55,12 @@ export const enableUserMicrophone = async (
         audioCtx,
         recordedChunks,
         enabled: true,
-        currentFormants: formantData
+        currentFormants: formantData,
+        mediaStream: stream
     }
 }
+
+
 
 export function mergeBuffers(buffers: Iterable<Float32Array>): Float32Array {
     // const length = buffers.reduce((sum, b) => sum + b.length, 0);

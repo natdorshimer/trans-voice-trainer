@@ -1,9 +1,10 @@
 import create from "zustand";
 import {devtools} from "zustand/middleware";
-import React, {useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useMicrophoneStore} from "@/app/providers/MicrophoneProvider";
 import {useHeatmapSettings} from "@/app/stores/spectrogram/HeatmapSettingsStore";
-import {useHeatmapSettingsStore} from "@/app/providers/HeatmapSettingsProvider";
+import {UpdatingHeatmapProps} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
+import {getFrequencyMagnitudeData} from "@/app/lib/microphone/GetFrequencyMagnitudeData";
 
 export interface SpectrogramDataState {
     currentColumn: number[],
@@ -56,37 +57,24 @@ const useDivSize = () => {
     return {containerWidth, containerRef};
 }
 
-const DEFAULT_UPPER_FREQUENCY = 4096; // Default upper frequency in Hz
-
-export const useSpectrogram = () => {
-    const {currentColumn} = useSpectrogramDataStore()
+export const useSpectrogram = (): UpdatingHeatmapProps => {
+    const {currentColumn, setColumn} = useSpectrogramDataStore()
 
     const {userMicrophone, micIsEnabled, fftSize, sampleRate} = useMicrophoneStore(state => ({
         userMicrophone: state.userMicrophone,
         micIsEnabled: state.userMicrophone?.enabled || false,
         fftSize: state.fftSize,
-        sampleRate: state.sampleRate
+        sampleRate: state.userMicrophone?.audioCtx?.sampleRate || 16000
     }))
-
-
-    // const fullHeight = userMicrophone?.analyserNode?.frequencyBinCount || fftSize / 2;
-    // const frequencyResolution = sampleRate / fftSize;
-
-    const {isOverlayEnabled, upperFrequency, isHeatmapEnabled, selectedFormant} = useHeatmapSettingsStore(state => ({
-        isOverlayEnabled: state.isOverlayEnabled,
-        upperFrequency: state.upperFrequency,
-        isHeatmapEnabled: state.isEnabled,
-        selectedFormant: state.selectedFormant
-    }));
-
-    // Calculate the number of frequency bins to represent the desired range
-    // const visibleFrequencyBins = Math.floor(upperFrequency / frequencyResolution);
-    // const height = Math.min(fullHeight, visibleFrequencyBins);
 
     const height = 512;
     const heatmapSettings = useHeatmapSettings()
     const {containerWidth, containerRef} = useDivSize();
+    const formantData = userMicrophone?.currentFormants || null;
 
+    const updateFftData = () => userMicrophone
+        && userMicrophone.enabled
+        && setColumn(getFrequencyMagnitudeData(userMicrophone));
 
     return {
         canvasProps: {
@@ -96,14 +84,12 @@ export const useSpectrogram = () => {
         drawData: {
             columnToDraw: currentColumn,
             shouldDraw: micIsEnabled,
-            heatmapEnabled: isHeatmapEnabled,
+            heatmapEnabled: heatmapSettings.isEnabled,
+            frequencyResolution: sampleRate / fftSize,
+            updateFftData,
             heatmapSettings,
+            formantData
         },
-        containerRef,
-        isOverlayEnabled,
-        upperFrequency,
-        formantData: userMicrophone?.currentFormants,
-        isHeatmapEnabled,
-        selectedFormant
+        containerRef
     }
 }

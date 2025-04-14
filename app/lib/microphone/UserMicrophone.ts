@@ -6,5 +6,6 @@ export interface UserMicrophone {
     audioCtx: AudioContext,
     recordedChunks: CircularBuffer<Float32Array>
     enabled: boolean,
-    currentFormants: CircularBuffer<FormantData>
+    currentFormants: CircularBuffer<FormantData>,
+    mediaStream: MediaStream
 }

@@ -1,5 +1,5 @@
 import {Segment} from "@/app/lib/segmenter";
-import {WordWithFormants} from "@/app/ui/spectrogram/FormantAnalysis";
+import {WordWithFormants} from "@/app/ui/FormantAnalysis";
 import {mergeBuffers} from "@/app/lib/microphone/EnableUserMicrophone";
 import {CircularBuffer} from "@/app/lib/CircularBuffer";
 

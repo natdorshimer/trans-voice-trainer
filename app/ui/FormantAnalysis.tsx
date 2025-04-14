@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import wd from 'public/formant_data.json';
+import wd from '@/public/formant_data.json';
 import {useHeatmapSettingsStore} from "@/app/providers/HeatmapSettingsProvider";
 import {FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 

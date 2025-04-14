@@ -1,5 +1,8 @@
 import type { NextConfig } from 'next';
 
+const prodPath = process.env['TRANS_VOICE_PATH'];
+const isProd = process.env.NODE_ENV === 'production';
+
 const nextConfig: NextConfig = {
     reactStrictMode: true,
     output: "export",
@@ -14,14 +17,12 @@ const nextConfig: NextConfig = {
      *
      * @see https://nextjs.org/docs/app/api-reference/next-config-js/basePath
      */
-    basePath: process.env.NODE_ENV === 'production' ? '/trans-voice-trainer' : '',
-    assetPrefix: process.env.NODE_ENV === 'production' ? '/trans-voice-trainer/' : '',
+    basePath: isProd ? prodPath : '',
+    assetPrefix: isProd ? prodPath + "/" : '',
 
     images: {
         unoptimized: true,
     },
 };
-
-console.log(nextConfig.basePath);
 
 export default nextConfig;

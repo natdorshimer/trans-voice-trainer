@@ -1,46 +1,17 @@
 'use client';
 
-import {MicrophoneProvider, useMicrophoneStore} from "@/app/providers/MicrophoneProvider";
+import {MicrophoneProvider} from "@/app/providers/MicrophoneProvider";
 import {HeatmapSettingsProvider} from "@/app/providers/HeatmapSettingsProvider";
 import {useSpectrogram} from "@/app/stores/spectrogram/SpectrogramStore";
 import React from "react";
 import {UpdatingHeatmap} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {Controls} from "@/app/ui/spectrogram/controls/Controls";
-import {AnalyzeRecording} from "@/app/ui/spectrogram/AnalyzeRecording";
+import {AnalyzeRecording} from "@/app/ui/AnalyzeRecording";
+import {FormantPanel} from "@/app/ui/FormantAdviceWindow";
 
 
 const Spectrogram = () => {
-    const {
-        containerRef,
-        isOverlayEnabled,
-        upperFrequency,
-        formantData,
-        isHeatmapEnabled,
-        selectedFormant,
-        ...heatmapProps
-    } = useSpectrogram();
-    const { sampleRate, fftSize } = useMicrophoneStore(state => ({
-        sampleRate: state.sampleRate,
-        fftSize: state.fftSize,
-    }));
-
-    const frequencyResolution = sampleRate / fftSize;
-    return (
-        <div ref={containerRef} className="w-full" style={{ position: 'relative' }}>
-            <UpdatingHeatmap
-                {...heatmapProps}
-                height={heatmapProps.canvasProps.height}
-                frequencyResolution={frequencyResolution}
-                sampleRate={sampleRate}
-                fftSize={fftSize}
-                disableOverlay={!isOverlayEnabled}
-                upperFrequency={upperFrequency} // Pass the upper frequency
-                formantData={formantData || null}
-                areFormantsVisible={isOverlayEnabled}
-                selectedFormant={selectedFormant}
-            />
-        </div>
-    );
+    return <UpdatingHeatmap {...useSpectrogram()}/>;
 };
 
 
@@ -66,6 +37,7 @@ function SpecPlus() {
                     <Spectrogram/>
                 </div>
             </header>
+            {/*<FormantPanel/>*/}
             <div className="p-5 md:px-2 gap-3 flex flex-col md:flex-row items-start"> {/* Default to col, row on md+ */}
                 <div className="flex-1 w-full"> {/* Ensure children take full width in column layout */}
                     <Controls/>

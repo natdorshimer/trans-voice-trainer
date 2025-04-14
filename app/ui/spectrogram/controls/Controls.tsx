@@ -11,7 +11,7 @@ import {DisableAxisButton} from "@/app/ui/spectrogram/controls/DisableAxisButton
 
 
 export const Controls = () => {
-    const [isExpanded, setIsExpanded] = useState(true);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     const toggleExpand = () => {
         setIsExpanded(!isExpanded);
@@ -34,8 +34,6 @@ export const Controls = () => {
                             <DisableAxisButton/>
                             <HeatmapDisplayFrequencyControl/>
                             <MaxValueSlider/>
-                            <SampleRateSelectionField/>
-                            <FftSizeSelectionField/>
                         </div>
                     )}
                 </div>

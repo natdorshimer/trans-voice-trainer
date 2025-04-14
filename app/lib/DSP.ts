@@ -12,7 +12,7 @@ import {FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 
 let essentia: Essentia | undefined = undefined;
 
-export async function getEssentia(): Essentia {
+export async function getEssentia(): Promise<Essentia> {
 
     if (essentia) {
         return essentia;
@@ -225,11 +225,11 @@ function extractFormantsFromLPC(lpcCoeffs: Float32Array | null, sampleRate: numb
     return [f1_hz, f2_hz, f3_hz];
 }
 
-export async function computeFormantsBase(
+export function computeFormantsBase(
     essentia: Essentia,
     samples: Float32Array,
     sampleRate: number
-): Promise<FormantData> {
+): FormantData {
     const f0_hz = estimateF0(essentia, samples, sampleRate);
     const emphasizedSegment = preprocessForLPC(samples);
     const lpcCoeffs = computeLPC(essentia, emphasizedSegment, sampleRate);
@@ -256,7 +256,7 @@ export const getEssentiaFormantAnalyzer = async () => {
             return {word, f0_hz: 0, f1_hz: 0, f2_hz: 0, f3_hz: 0};
         }
 
-        const formants = await computeFormantsBase(essentia, segmentSamples, sampleRate);
+        const formants = computeFormantsBase(essentia, segmentSamples, sampleRate);
 
         return {
             word,

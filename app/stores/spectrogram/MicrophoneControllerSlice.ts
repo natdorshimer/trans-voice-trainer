@@ -28,7 +28,8 @@ export const createMicrophoneControllerSlice: StoreSlice<MicrophoneController, M
 
         await userMicrophone.audioCtx.close();
         userMicrophone.enabled = false;
-        console.log("Closed microphone");
+        userMicrophone.mediaStream.getAudioTracks().forEach(it => it.stop());
+
         set(state => ({
             ...state,
             userMicrophone

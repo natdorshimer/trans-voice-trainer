@@ -1,9 +1,12 @@
 {
   "private": true,
   "scripts": {
-    "build": "npm run copy-wasm && next build",
-    "dev": "npm run copy-wasm && next dev --turbopack",
-    "start": "npm run copy-wasm && next start",
+    "dev:worklet": "esbuild app/lib/audio-worklet/recorder-processor.ts --bundle --outfile=public/audio/recorder-processor.js --format=esm --platform=browser --watch",
+    "build:worklet": "esbuild app/lib/audio-worklet/*.ts --bundle --outfile=public/audio/recorder-processor.js --format=esm --platform=browser --minify",
+    "pre-build": "npm run build:worklet && npm run copy-wasm",
+    "build": "npm run pre-build && next build",
+    "dev": "npm run pre-build && next dev --turbopack",
+    "start": "npm run build && next start",
     "copy-wasm": "node scripts/copy-wasm.js",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d out -b gh-pages"
@@ -33,6 +36,7 @@
     "@types/node": "22.10.7",
     "@types/react": "19.0.7",
     "@types/react-dom": "19.0.3",
+    "esbuild": "^0.25.2",
     "postcss-import": "^16.1.0"
   }
 }

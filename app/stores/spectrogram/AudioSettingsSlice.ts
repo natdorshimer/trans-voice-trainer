@@ -8,8 +8,8 @@ export interface AudioSettings {
 }
 
 export const createAudioSettingsSlice: StoreSlice<AudioSettings, MicrophoneStore> = (set, get) => ({
-    sampleRate: 16384,
-    fftSize: 1024,
+    sampleRate: 16000,
+    fftSize: 2048,
     userMicrophone: undefined,
     setSampleRate: sampleRate => {
         set(state => ({
