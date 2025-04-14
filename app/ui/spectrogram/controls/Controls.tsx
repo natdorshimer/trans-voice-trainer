@@ -31,7 +31,7 @@ export const Controls = () => {
                     {isExpanded && (
                         <div>
                             <DisableHeatmapButton/>
-                            <DisableAxisButton/>
+                            {/*<DisableAxisButton/>*/}
                             <MaxValueSlider/>
                             <HeatmapDisplayFrequencyControl/>
                             <SampleRateSelectionField/>
