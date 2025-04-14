@@ -23,34 +23,55 @@ interface WordDatabase {
 const wordDatabase: WordDatabase = wd as unknown as WordDatabase;
 
 const getHelperText = (formantValue: number, targetFormant: number, gender: string, formant: string) => {
+    const isInBounds = inBounds(formantValue, targetFormant, gender);
+
     if (formant === 'F0') {
-        return <p>{`This is just pitch! Just try to go ${formantValue > targetFormant ? 'lower' : 'higher'}. Don't worry too much about pitch - this is not the most important part about what makes your voice feminine or masculine!`}</p>;
+        const helperText = isInBounds ?
+            'Your pitch is looking good!' :
+            (isInBounds === false ? `Just try to go ${formantValue > targetFormant ? 'lower' : 'higher'}` : '')
+        return <p>{`This is just pitch! ${helperText}. But don't worry too much about pitch - this is not the most important part about what makes your voice feminine or masculine!`}</p>;
     }
 
     if (formant === 'F1') {
-        return <p>F1 is the <b>most important</b>. Make the cavity of your throat smaller. Try panting like a big dog and then transitioning to panting like a small dog - that will give you a feeling of a higher F1. Then transition into vowels, like pa- or part. I highly recommend the <a className='text-blue-300' href='https://www.youtube.com/watch?v=BW8X2nXexQs'>Trans Voice Lessons video</a> on this topic!</p>
+        // Currently just feminine
+        return <p>F1 is the <b>most important</b>. It's all about making the cavity of your <b>throat</b> smaller. Try panting like a big dog and then transitioning to panting like a small dog - that will give you a feeling of a higher F1. Then transition into vowels, like pa- or part. I highly recommend the <a className='text-blue-300' href='https://www.youtube.com/watch?v=BW8X2nXexQs'>Trans Voice Lessons video</a> on this topic!</p>
+    }
+
+    if (formant === 'F2') {
+        // Currently just feminine
+        return <p>F2 is brightness! This is all about reducing the space in your <b>mouth</b>. The smaller the space at the front of your mouth, the brighter the sound! Make an 'ee' sound like 'key' and feel how your tongue touches the top of your mouth and constricts the space there with the 'k' sound. Now when the 'ee' comes out, try not to lower the arch of the tongue much, and try to move your tongue more forward and closer to your teeth! Now, the trick (and hard part) is to emulate that feeling of a constricted mouth space for other sounds.</p>
+    }
+
+    if (formant === 'F3') {
+        return <p>F3 contributes less than F1 and F2, but it still plays a minor part in voice training. Spreading your lips in a wide smile will result in a slightly brighter sound as well as moving your tongue more forward in your mouth (like with F2) will also raise F3.</p>
     }
 
     return <p>{`Placeholder text for ${formant} for ${gender}. Your value: ${formantValue}, Target: ${targetFormant}`}</p>;
 };
 
-const getFormantColor = (current: number, target: number | undefined, type: 'feminine' | 'masculine'): string => {
+const inBounds = (current: number, target: number | undefined, gender: string) => {
     if (target === undefined) {
-        return '';
+        return undefined;
     }
     const lowerBoundFeminine = target * 0.9;
     const upperBoundMasculine = target * 1.1;
 
-    if (type === 'feminine') {
-        if (current >= target || current >= lowerBoundFeminine) {
-            return 'text-green-400';
-        }
-    } else if (type === 'masculine') {
-        if (current <= target || current <= upperBoundMasculine) {
-            return 'text-green-400';
-        }
+    if (gender === 'feminine') {
+        return current >= target || current >= lowerBoundFeminine
     }
-    return 'text-red-400';
+
+    if (gender === 'masculine') {
+        return current <= target || current <= upperBoundMasculine;
+    }
+
+    return false;
+}
+
+const getFormantColor = (current: number, target: number | undefined, type: 'feminine' | 'masculine'): string => {
+    const isInBounds = inBounds(current, target, type);
+    if (isInBounds === undefined) return '';
+
+    return isInBounds ? 'text-green-400' : 'text-red-400';
 };
 
 interface SmallWordDisplayProps {
