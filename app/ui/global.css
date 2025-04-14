@@ -1,6 +1,9 @@
+@import 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 
 input[type='number'] {
     -moz-appearance: textfield;
@@ -38,3 +41,4 @@ input[type='number']::-webkit-outer-spin-button {
     border-bottom: 0.5em solid currentColor; /* Use current text color */
     top: 0.4em;
 }
+

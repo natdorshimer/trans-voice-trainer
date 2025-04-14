@@ -16,7 +16,8 @@ export default function Layout({children}: { children: React.ReactNode }) {
 }
 
 const Header = () => {
-    return <div className={"block font-bold text-center text-4xl"}>
+    return <div className={"font-bold text-4xl flex justify-center items-center gap-x-5"}>
         <h1>Trans Voice Trainer</h1>
+        <a href="https://github.com/natdorshimer/trans-voice-trainer"><i className="fab fa-github text-right text-2xl"></i></a>
     </div>
 }
