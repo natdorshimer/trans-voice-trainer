@@ -4,7 +4,7 @@
 
 An web application designed to help trans people train their voice by analyzing and providing feedback on vocal formants. This is primarily targeted towards transgender women or anyone looking to feminize their voice. 
 
-➡️ **[Try Trans Voice Trainer Here!](https://natdorshimer.github.io/trans-voice-trainer/)** ⬅️
+[**Try Trans Voice Trainer Here! 🏳️‍⚧️**](https://natdorshimer.github.io/trans-voice-trainer/)
 
 
 ## About This Project
