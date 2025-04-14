@@ -73,7 +73,7 @@ export const AdvicePanel = () => {
 
 export const FormantAdviceButton: React.FC<FormantAdviceButton> = ({setFormant, formant}) => {
     return <button onClick={() => setFormant(formant)} className="focus:outline-none">
-        <div className="bg-zinc-600 hover:bg-zinc-500 text-white rounded-md p-2 text-center w-24">
+        <div className="bg-zinc-600 hover:bg-zinc-500 text-white rounded-md p-2 text-center sm:w-24 w-20">
             <div className="font-semibold">{formant}</div>
         </div>
     </button>
