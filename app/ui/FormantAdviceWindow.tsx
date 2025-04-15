@@ -77,7 +77,7 @@ export const AdvicePanel = () => {
     const [formant, setFormant] = useState<string | null>(null);
     const onWindowClose = () => setFormant(null);
 
-    return <div className=" flex gap-5 justify-center">
+    return <div className="flex gap-2 sm:gap-3 md:gap-5 justify-center">
 
         <HelperButton/>
         {
@@ -97,14 +97,14 @@ export const AdvicePanel = () => {
 
 
 const StandardButton = ({...props}: React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>) => {
-    const finalClassName = clsx("focus:outline-none bg-zinc-600 hover:bg-zinc-500 text-white rounded-md p-2 text-center sm:w-20 w-16 font-semibold", props.className);
+    const finalClassName = clsx("focus:outline-none w-11 sm:w-16 md:w-20 bg-zinc-600 hover:bg-zinc-500 text-white rounded-md p-2 text-center flex-1 max-w-24", props.className);
     return <button {...props} className={finalClassName}>
     </button>
 }
 
 export const FormantAdviceButton: React.FC<FormantAdviceButton> = ({setFormant, formant}) => {
-    return <button onClick={() => setFormant(formant)} className="focus:outline-none">
-        <div className="bg-zinc-600 hover:bg-zinc-500 text-white rounded-md p-2 text-center sm:w-24 w-20">
+    return <button onClick={() => setFormant(formant)} className="flex-1 max-w-24 focus:outline-none">
+        <div className="bg-zinc-600 hover:bg-zinc-500 text-white rounded-md p-2 text-center">
             <div className="font-semibold">{formant}</div>
         </div>
     </button>
