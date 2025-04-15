@@ -35,6 +35,7 @@ export const Controls = () => {
                             <MaxValueSlider/>
                             <HeatmapDisplayFrequencyControl/>
                             <SampleRateSelectionField/>
+                            <FftSizeSelectionField/>
                         </div>
                     )}
                 </div>

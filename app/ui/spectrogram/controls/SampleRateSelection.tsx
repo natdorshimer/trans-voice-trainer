@@ -20,15 +20,13 @@ const useSampleRateSelection = () => {
 
     const {sampleRate, setSampleRate} = microphoneStore
 
-    const items = [12, 13, 14, 15].map(it => Math.pow(2, it).toString())
-
-    const value = sampleRate ? sampleRate : 2048
+    const items = [16000, 32000, 44000, 48000].map(it => it.toString())
 
     const onSelect = (value: string) => setSampleRate(parseInt(value))
 
     return {
         items,
-        value: value.toString(),
+        value: sampleRate.toString(),
         onSelect,
     }
 }

@@ -1,50 +1,6 @@
-import React, {ComponentProps, useState} from "react";
-import {A} from "@/app/ui/A";
-import {HelperText, HelperTextExpanded} from "@/app/ui/FormantAnalysis";
+import React, {useCallback, useEffect, useRef, useState} from "react";
+import {HelperTextExpanded} from "@/app/ui/FormantAnalysis";
 import clsx from "clsx";
-
-interface FormantAdviceWindowProps {
-    formant: string
-}
-
-interface SupportingFormantInfoProps {
-    formant: string;
-}
-
-const SupportingFormantInfo: React.FC<SupportingFormantInfoProps> = ({formant}) => {
-    switch (formant) {
-        case 'F0':
-            return <p>Raising pitch is easy, but raising pitch without also lowering the <b>weight</b> can put strain on your voice and make talking in a higher pitch uncomfortable and unsustainable. <A href='https://www.youtube.com/watch?v=BfCS01MkbIY'>This video</A> acts as an amazing resource for modifying pitch in a comfortable, sustainable way.</p>
-        case 'F1':
-            return <p>F1 is the <b>most important</b>. It's all about making the cavity of your <b>throat</b> smaller. Try panting like a big dog and then transitioning to panting like a small dog - that will give you a feeling of a higher F1. Then transition into vowels, like pa- or part. I highly recommend the <A href='https://youtu.be/BW8X2nXexQs?t=375'>Trans Voice Lessons video</A> on this topic!</p>
-        case 'F2':
-            return <p></p>
-        case 'F3':
-            return <p></p>
-        default:
-            throw new Error('Formant format is not supported');
-    }
-}
-
-interface FormantAdviceWindowProps {
-    onClose: () => void;
-    children: React.ReactNode;
-    formant: string;
-}
-
-const FormantAdviceWindow: React.FC<FormantAdviceWindowProps> = ({onClose, children, formant}) => {
-    return <div
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-900 text-white p-6 rounded-md shadow-lg z-10 text-center">
-        <h2 className="text-xl font-semibold mb-4">{formant} Tips</h2>
-            <div className="mb-4">
-                {children}
-            </div>
-        <button onClick={onClose}
-                className="bg-zinc-600 hover:bg-zinc-500 text-white py-2 px-4 rounded-md focus:outline-none mt-2">
-            Close
-        </button>
-    </div>
-}
 
 interface WindowProps {
     onClose: () => void;
@@ -52,11 +8,34 @@ interface WindowProps {
     header: string;
 }
 
-const Window: React.FC<WindowProps> = ({onClose, children, header}) => {
-    return <div
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-900 text-white p-6 rounded-md shadow-lg z-10 text-center">
-        <h2 className="text-xl font-semibold mb-4">{header}</h2>
-        <div className="mb-4">
+export const ScrollableWindow: React.FC<WindowProps> = ({onClose, children, header}) => {
+    const windowRef = useRef<HTMLDivElement>(null);
+
+    const handleClickOutside = useCallback((event: MouseEvent) => {
+        if (windowRef.current && !windowRef.current.contains(event.target as Node)) {
+            onClose();
+        }
+    }, [onClose]);
+
+    const handleEscapeKey = useCallback((event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+            onClose();
+        }
+    }, [onClose]);
+
+    useEffect(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('keydown', handleEscapeKey);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleEscapeKey);
+        };
+    }, [handleClickOutside, handleEscapeKey]);
+
+    return <div ref={windowRef} className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-900 text-white p-6 rounded-md shadow-lg z-10 text-center flex flex-col max-w-lg w-full">
+        <h2 className="text-xl font-semibold mb-4 flex-shrink-0">{header}</h2>
+        <div className="mb-4 overflow-y-auto max-h-[60vh]">
             {children}
         </div>
         <button onClick={onClose}
@@ -88,9 +67,9 @@ export const AdvicePanel = () => {
                     setFormant={setFormant}
                 />)
         }
-        {formant ? <FormantAdviceWindow onClose={onWindowClose} formant={formant}>
+        {formant ? <ScrollableWindow header={`${formant} Tips`} onClose={onWindowClose}>
             <HelperTextExpanded formant={formant}/>
-    </FormantAdviceWindow> : null
+    </ScrollableWindow> : null
         }
     </div>
 }
@@ -115,17 +94,17 @@ export const HelperButton =() => {
 
     return <>
         <StandardButton className='sm:w-16 w-16' onClick={() => setOpen(true)}>?</StandardButton>
-        {isOpen ? <Window header='How to Use' onClose={() => setOpen(false)}>
+        {isOpen ? <ScrollableWindow header='How to Use' onClose={() => setOpen(false)}>
             <p className={'text-left'}>
-                Trans Voice Trainer helps you train the <b>formants</b> of your voice. You can think of your voice as a bunch of different frequencies layered on top of each other. The <b>formants</b> are the frequencies that are most prominent, or strong, in your voice.
+                Trans Voice Trainer helps you train the <b>formants</b> of your voice. You can think of your voice as a bunch of different frequencies layered on top of each other. The <b>formants</b> are the frequencies that are most prominent, or strong, in your voice. Masculine voices typically have lower formants than feminine formants.
                 <br/><br/>
                 Each formant has different physical characteristics associated with it. You can click on the result of each formant in the analysis window to get advice on you can physically modify your voice to achieve the desired formant.
                 <br/><br/>
                 <li><b>F0</b> is pitch.</li>
-                <li><b>F1</b> is controlled by the throat length. This is the most important formant for feminization.</li>
+                <li><b>F1</b> is controlled by the throat size. This is the most important formant for feminization.</li>
                 <li><b>F2</b> is controlled by the mouth cavity size and lip shape</li>
                 <li><b>F3</b> is controlled by lip shape</li>
             </p>
-        </Window> : <></>}
+        </ScrollableWindow> : <></>}
     </>
 }

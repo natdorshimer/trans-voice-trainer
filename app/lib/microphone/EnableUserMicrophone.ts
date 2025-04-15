@@ -1,10 +1,10 @@
 import {UserMicrophone} from "@/app/lib/microphone/UserMicrophone";
-import {AudioSettings} from "@/app/stores/spectrogram/AudioSettingsSlice";
 import {FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {CircularBuffer} from "@/app/lib/CircularBuffer";
+import {AudioSettings} from "@/app/stores/spectrogram/AudioSettingsSlice";
 
 export const enableUserMicrophone = async (
-    settings: AudioSettings,
+    audioSettings: AudioSettings,
     previousChunks: CircularBuffer<Float32Array> | undefined = undefined
 ): Promise<UserMicrophone> => {
     const stream = await navigator
@@ -13,12 +13,14 @@ export const enableUserMicrophone = async (
             audio: {
                 echoCancellation: false,
                 noiseSuppression: false,
-                channelCount: 1,
-                sampleRate: settings.sampleRate
+                channelCount: 1
             }
         });
 
-    const audioCtx = new AudioContext({sampleRate: settings.sampleRate})
+    const audioCtx = new AudioContext({
+        sampleRate: audioSettings.sampleRate
+    })
+
     await audioCtx.audioWorklet.addModule('audio/recorder-processor.js')
 
     const streamSource = audioCtx.createMediaStreamSource(stream)
@@ -48,9 +50,8 @@ export const enableUserMicrophone = async (
     };
 
     analyserNode.smoothingTimeConstant = 0;
-    analyserNode.fftSize = settings.fftSize
+    analyserNode.fftSize = audioSettings.fftSize;
 
-    console.log("Enabled user microphone")
     return {
         analyserNode,
         audioCtx,
@@ -61,10 +62,7 @@ export const enableUserMicrophone = async (
     }
 }
 
-
-
 export function mergeBuffers(buffers: Iterable<Float32Array>): Float32Array {
-    // const length = buffers.reduce((sum, b) => sum + b.length, 0);
     let length = 0;
     for (const buffer of buffers) {
         length += buffer.length;

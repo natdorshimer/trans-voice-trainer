@@ -11,18 +11,13 @@ export interface SelectionValueInputFieldProps {
 export const SelectionInputField = (props: SelectionValueInputFieldProps) => {
     const {onSelect, items, value, label} = props;
 
-    // Generate a unique ID for the select element based on the label
-    // This is important for accessibility (connecting label and select)
     const selectId = `basic-select-${label.toLowerCase().replace(/\s+/g, '-')}`;
 
-    // Map the items array to standard HTML <option> elements
     const optionElements = items.map((item) => {
         return <option key={item} value={item}>{item}</option>;
     });
 
-    // Handle the change event from the native <select> element
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        // Call the onSelect prop function with the new selected value
         onSelect(event.target.value);
     };
 

@@ -86,7 +86,7 @@ const shiftLeftAndDrawColumn = (
 ) => {
     if (drawData.shouldDraw) {
         drawData.updateFftData();
-        shiftCanvasLeftByDelta(ctx, 1)
+        shiftCanvasLeftByDelta(ctx, 1);
         drawColumn(ctx, drawData, canvasHeight);
     }
 }
@@ -117,8 +117,8 @@ const drawColumn = (
     canvasHeight: number
 ) => {
     const { columnToDraw, heatmapSettings } = drawData;
-    const gradientScale = heatmapSettings.gradientScale;
 
+    const gradientScale = heatmapSettings.gradientScale;
     const visibleFrequencyBins = Math.floor(drawData.heatmapSettings.upperFrequency / drawData.frequencyResolution);
     const startingIndex = columnToDraw.length - visibleFrequencyBins;
     const numIndexesPerPixel = visibleFrequencyBins / canvasHeight;

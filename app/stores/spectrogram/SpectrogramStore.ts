@@ -63,7 +63,7 @@ export const useSpectrogram = (): UpdatingHeatmapProps => {
     const {userMicrophone, micIsEnabled, fftSize, sampleRate} = useMicrophoneStore(state => ({
         userMicrophone: state.userMicrophone,
         micIsEnabled: state.userMicrophone?.enabled || false,
-        fftSize: state.fftSize,
+        fftSize: state.userMicrophone?.analyserNode?.fftSize || 4096,
         sampleRate: state.userMicrophone?.audioCtx?.sampleRate || 16000
     }))
 
