@@ -159,9 +159,9 @@ const getFormantColor = (
     const feminine_value = averageFormants?.feminine?.[formant];
     const percentage = 0.1;
 
-    if (masculine_value && feminine_value) {
-        return getColorByRelativeDifference(masculine_value, feminine_value, comparisonType, value);
-    }
+    // if (masculine_value && feminine_value) {
+    //     return getColorByRelativeDifference(masculine_value, feminine_value, comparisonType, value);
+    // }
 
     if (comparisonType === "feminine" && feminine_value)  {
         if (value >= feminine_value) {
