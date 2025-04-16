@@ -84,8 +84,8 @@ const shiftLeftAndDrawColumn = (
     drawData: UpdatingHeatmapDrawData,
     canvasHeight: number,
 ) => {
+    drawData.updateFftData();
     if (drawData.shouldDraw) {
-        drawData.updateFftData();
         shiftCanvasLeftByDelta(ctx, 1);
         drawColumn(ctx, drawData, canvasHeight);
     }

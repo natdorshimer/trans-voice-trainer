@@ -34,8 +34,8 @@ export const Controls = () => {
                             {/*<DisableAxisButton/>*/}
                             <MaxValueSlider/>
                             <HeatmapDisplayFrequencyControl/>
-                            <SampleRateSelectionField/>
-                            <FftSizeSelectionField/>
+                            {navigator.userAgent.includes("Firefox") ? undefined : <SampleRateSelectionField/>}
+                            {/*<FftSizeSelectionField/>*/}
                         </div>
                     )}
                 </div>

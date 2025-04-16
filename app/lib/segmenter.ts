@@ -2,6 +2,7 @@ import {ServerMessageResult} from "vosk-browser/dist/interfaces";
 import {getModel} from "@/app/lib/ModelProvider";
 import {Model} from "vosk-browser";
 import {Segmenter} from "@/app/lib/AudioAnalyzer";
+import {outputSampleRate} from "@/app/lib/microphone/EnableUserMicrophone";
 
 export interface Segment {
     word: string;
@@ -28,15 +29,21 @@ const resultToSegments = (serverMessageResult: ServerMessageResult): Segment[] =
     return segments;
 }
 
+export function getSampleRate(ctx: AudioContext | null | undefined) {
+    if (!ctx) return 16000;
+    return Math.min(ctx.sampleRate, outputSampleRate);
+}
+
 async function kaldiRecognizerSync(model: Model, ctx: AudioContext, samples: Float32Array): Promise<ServerMessageResult> {
     return new Promise((resolve, reject) => {
-        const recognizer = new model.KaldiRecognizer(ctx.sampleRate);
+        let sampleRate = getSampleRate(ctx);
+        const recognizer = new model.KaldiRecognizer(sampleRate);
         recognizer.setWords(true)
         recognizer.on("result", (message) => {
             resolve(message as ServerMessageResult);
         });
 
-        const audioBuffer = ctx.createBuffer(1, samples.length, ctx.sampleRate);
+        const audioBuffer = ctx.createBuffer(1, samples.length, sampleRate);
         audioBuffer.copyToChannel(samples, 0);
         recognizer.acceptWaveform(audioBuffer);
         recognizer.retrieveFinalResult()

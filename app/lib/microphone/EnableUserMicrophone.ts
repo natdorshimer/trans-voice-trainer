@@ -2,6 +2,9 @@ import {UserMicrophone} from "@/app/lib/microphone/UserMicrophone";
 import {FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {CircularBuffer} from "@/app/lib/CircularBuffer";
 import {AudioSettings} from "@/app/stores/spectrogram/AudioSettingsSlice";
+import {getSampleRate} from "@/app/lib/segmenter";
+
+export const outputSampleRate = 22000;
 
 export const enableUserMicrophone = async (
     audioSettings: AudioSettings,
@@ -18,7 +21,8 @@ export const enableUserMicrophone = async (
         });
 
     const audioCtx = new AudioContext({
-        sampleRate: audioSettings.sampleRate
+        latencyHint: "interactive",
+        sampleRate: navigator.userAgent.includes("Firefox") ? undefined : audioSettings.sampleRate,
     })
 
     await audioCtx.audioWorklet.addModule('audio/recorder-processor.js')
@@ -29,8 +33,8 @@ export const enableUserMicrophone = async (
 
     const recorderNode = new AudioWorkletNode(audioCtx, 'recorder-processor')
 
-    streamSource.connect(analyserNode)
-    streamSource.connect(recorderNode)
+    streamSource.connect(analyserNode);
+    streamSource.connect(recorderNode);
 
     const recordedChunks = previousChunks || new CircularBuffer<Float32Array>(60 * 10);
     const formantData = new CircularBuffer<FormantData>(20);
@@ -50,7 +54,7 @@ export const enableUserMicrophone = async (
     };
 
     analyserNode.smoothingTimeConstant = 0;
-    analyserNode.fftSize = audioSettings.fftSize;
+    analyserNode.fftSize = Math.pow(2, Math.floor(Math.log2(getSampleRate(audioCtx) / 4)))
 
     return {
         analyserNode,
