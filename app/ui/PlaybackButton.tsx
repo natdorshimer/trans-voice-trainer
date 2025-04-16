@@ -3,10 +3,9 @@ import {StandardSpectrogramButton} from "@/app/ui/spectrogram/controls/StartStop
 
 interface PlaybackButtonProps {
     audioFilePath: string;
-    className?: string;
 }
 
-export const PlaybackButton: React.FC<PlaybackButtonProps> = ({ audioFilePath, className }) => {
+export const PlaybackButton: React.FC<PlaybackButtonProps> = ({ audioFilePath }) => {
     const audioRef = useRef<HTMLAudioElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
 
@@ -21,7 +20,7 @@ export const PlaybackButton: React.FC<PlaybackButtonProps> = ({ audioFilePath, c
     };
 
     return (
-        <div className={className}>
+        <div>
             <audio ref={audioRef} src={audioFilePath} />
             <StandardSpectrogramButton onClick={togglePlay}>
                 {isPlaying ? 'Pause' : 'Play'}
