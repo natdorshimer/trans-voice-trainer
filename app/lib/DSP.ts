@@ -108,7 +108,7 @@ function estimateF0(essentia: Essentia, segmentSamples: Float32Array, sampleRate
     try {
         const pitchResult = essentia.PitchYin(
             essentia.arrayToVector(segmentSamples),
-            2048, // frameSize - consider making configurable
+            segmentSamples.length,
             true,  // hopSizeRelative - consider making configurable
             22050, // sampleRate - seems redundant, should use the provided one
             20,    // minFrequency - consider making configurable

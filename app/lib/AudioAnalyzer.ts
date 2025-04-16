@@ -1,6 +1,6 @@
-import {Segment} from "@/app/lib/segmenter";
+import {getSampleRate, Segment} from "@/app/lib/segmenter";
 import {WordWithFormants} from "@/app/ui/FormantAnalysis";
-import {mergeBuffers} from "@/app/lib/microphone/EnableUserMicrophone";
+import {mergeBuffers, outputSampleRate} from "@/app/lib/microphone/EnableUserMicrophone";
 import {CircularBuffer} from "@/app/lib/CircularBuffer";
 
 export type Segmenter = (ctx: AudioContext, samples: Float32Array) => Promise<Segment[]>;
@@ -26,7 +26,7 @@ export class AudioAnalyzer {
         const segments = await this.extractWordSegments(this.audioCtx, samples);
 
         return await Promise.all(segments.map(async segment =>
-            await this.extractFormantsFromWords(segment, samples, this.audioCtx.sampleRate)
+            await this.extractFormantsFromWords(segment, samples, getSampleRate(this.audioCtx))
         ));
     }
 }
