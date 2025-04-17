@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-    SimpleStartStopButton,
-    StandardSpectrogramButton,
-    StartStopButton
+    SimpleStartStopButton
 } from "@/app/ui/spectrogram/controls/StartStopButton";
 import { AnalyzedResult } from "@/app/stores/spectrogram/PlaybackDataStore"; 
 

@@ -1,5 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+public/audio/raising-pitch.mp3
+
 # dependencies
 /node_modules
 /.pnp

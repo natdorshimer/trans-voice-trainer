@@ -1,62 +1,6 @@
-import React, {useEffect, useRef, useState} from "react";
+import React from "react";
 import clsx from "clsx";
 
-// TODO: This is a mess, fix this in the future
-export const StartStopButton: React.FC<StartStopButtonParams> = (params) => {
-    const {buttonState, isOn, onClick} = useStartStopButton(params)
-
-    const buttonRef = useRef<HTMLButtonElement>(null);
-
-    const handleKeyDown: EventListenerOrEventListenerObject = (event: Event) => {
-        if ((event as KeyboardEvent).key === ' ') {
-            event.preventDefault();
-            onClick();
-        }
-    };
-
-    useEffect(() => {
-        const parentElement = buttonRef.current ? buttonRef.current.parentElement : document; // Or document if no parent
-
-        if (parentElement) {
-            parentElement.addEventListener('keydown', handleKeyDown);
-        }
-
-        return () => {
-            if (parentElement) {
-                parentElement.removeEventListener('keydown', handleKeyDown);
-            }
-        };
-    }, [onClick]); // Re-run effect if onClick changes (though unlikely)
-
-    const colorsStopped = 'bg-cyan-700 hover:bg-blue-400 focus-visible:outline-blue-500 active:bg-blue-600'
-    const colorsStarted = 'bg-red-700 hover:bg-red-400 focus-visible:outline-red-500 active:bg-red-600';
-
-    const className = clsx(
-        isOn ? colorsStarted : colorsStopped,
-        'flex',
-        'h-10',
-        'items-center',
-        'rounded-lg',
-        'px-4',
-        'text-sm',
-        'font-medium',
-        'text-white',
-        'transition-colors',
-        'focus-visible:outline',
-        'focus-visible:outline-2',
-        'focus-visible:outline-offset-2',
-        'aria-disabled:cursor-not-allowed',
-        'aria-disabled:opacity-50'
-    );
-    return <div>
-        <button
-            onClick={onClick}
-            className={className}
-        >
-            {buttonState}
-        </button>
-    </div>
-}
 
 interface SimpleStartStopButtonProps extends React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> {
     isOn: boolean;
@@ -95,49 +39,10 @@ export const SimpleStartStopButton: React.FC<SimpleStartStopButtonProps> = ({isO
     </div>
 }
 
-const useStartStopButton = (params: StartStopButtonParams) => {
-    const [ isOn, setOn ] = useState(false);
-
-    const buttonStates = params.buttonState || { onText: 'Stop', offText: 'Start' }
-    const onStop = params.onStop || params.onStart;
-
-    const [buttonState, setButtonState] = useState<string>(buttonStates.offText)
-
-    const onClick = () => {
-        if (isOn) {
-            onStop();
-            setButtonState(buttonStates.offText);
-        } else {
-            params.onStart();
-            setButtonState(buttonStates.onText);
-        }
-
-        setOn(!isOn);
-    }
-
-    return {
-        buttonState,
-        isOn,
-        onClick
-    }
-}
-
 export const StandardSpectrogramButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = (props) => {
     const { className, ...innerProps } = props;
     return <button
         className={'bg-cyan-700 hover:bg-blue-400 focus-visible:outline-blue-500 active:bg-blue-600 items-center rounded-lg px-4 text-sm font-medium text-white transition-colors h-10 flex h-10 items-center rounded-lg px-4 text-sm font-medium text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 mt-2' + props.className}
         {...innerProps}
     ></button>
-}
-
-
-interface ButtonState {
-    onText: string;
-    offText: string;
-}
-
-interface StartStopButtonParams {
-    onStart: () => void;
-    onStop?: () => void;
-    buttonState?: ButtonState;
 }
