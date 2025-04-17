@@ -1,10 +1,13 @@
 import React, {useEffect, useState} from "react";
 import FormantAnalysis, {WordWithFormants} from "@/app/ui/FormantAnalysis";
-import {getVoskSegmenter} from "@/app/lib/segmenter";
+import {getResampledSampleRate, getVoskSegmenter} from "@/app/lib/segmenter";
 import {getEssentiaFormantAnalyzer} from "@/app/lib/DSP";
 import {useMicrophoneStore} from "@/app/providers/MicrophoneProvider";
 import {AudioAnalyzer} from "@/app/lib/AudioAnalyzer";
 import {CircularBuffer} from "@/app/lib/CircularBuffer";
+import {Resampler} from "@/app/lib/Resampler";
+import {useAnalyzedResultStore} from "@/app/stores/spectrogram/PlaybackDataStore";
+import {mergeBuffers} from "@/app/lib/microphone/EnableUserMicrophone";
 
 export const useAudioAnalyzer = (audioCtx: AudioContext | undefined) => {
     const [audioAnalyzer, setAudioAnalyzer] = useState<AudioAnalyzer | null>(null);
@@ -23,8 +26,11 @@ export const useAudioAnalyzer = (audioCtx: AudioContext | undefined) => {
                 return;
             }
 
+            const resampler = new Resampler(audioCtx.sampleRate, getResampledSampleRate(audioCtx));
+            await resampler.init();
+
             try {
-                const audioAnalyzer = new AudioAnalyzer(audioCtx, segmenter, formantComputer);
+                const audioAnalyzer = new AudioAnalyzer(audioCtx, segmenter, formantComputer, resampler);
                 setAudioAnalyzer(audioAnalyzer);
             } catch (err: any) {
                 setError(err.message || 'Failed to instantiate audio analyzer.');
@@ -52,13 +58,15 @@ export const AnalyzeRecording = () => {
 
     const {audioAnalyzer} = useAudioAnalyzer(audioCtx)
 
-    const shouldAnalyze = userMicrophone && audioAnalyzer && !(userMicrophone?.enabled) || false;
 
-    return <AnalyzeRecordingClient
+    const shouldAnalyze = audioCtx && userMicrophone && audioAnalyzer && !(userMicrophone?.enabled) || false;
+
+    return <>
+        <AnalyzeRecordingClient
         analyzer={audioAnalyzer}
         recordedChunks={userMicrophone?.recordedChunks}
         shouldAnalyze={shouldAnalyze}
-    />;
+    /></>;
 }
 
 export interface AnalyzeRecordingProps {
@@ -71,6 +79,7 @@ const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, reco
     const [results, setResult] = useState<WordWithFormants[] | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const {analyzedResults, addAnalyzedResult} = useAnalyzedResultStore();
 
     useEffect(() => {
         const analyze = async () => {
@@ -78,7 +87,15 @@ const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, reco
             try {
                 if (shouldAnalyze) {
                     setLoading(true);
-                    const allFormants = await analyzer!.computeAllFormants(recordedChunks!);
+                    const preResampledSamples = mergeBuffers(recordedChunks!);
+                    const allFormants = await analyzer!.computeAllFormants(preResampledSamples);
+
+                    addAnalyzedResult({
+                        samples: preResampledSamples,
+                        sampleRate: analyzer!.getSourceSampleRate(),
+                        formants: allFormants
+                    })
+
                     setResult(allFormants);
                 }
             } catch (err: any) {
@@ -91,9 +108,10 @@ const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, reco
         analyze();
     }, [analyzer, shouldAnalyze]); // Re-run analysis if recordedChunks or sampleRate change
 
+        const analyzedResult = analyzedResults.length > 0 ? analyzedResults[analyzedResults.length - 1] : null;
         return (
             <div>
-                <FormantAnalysis loading={loading} analyzedWords={results}/>
+                <FormantAnalysis loading={loading} analyzedWords={analyzedResult?.formants || null}/>
             </div>
         );
 };

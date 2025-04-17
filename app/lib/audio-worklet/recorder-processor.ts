@@ -5,25 +5,36 @@ import {EssentiaWASM} from "https://cdn.jsdelivr.net/npm/essentia.js@0.1.3/dist/
 // @ts-ignore
 import Essentia from "https://cdn.jsdelivr.net/npm/essentia.js@0.1.3/dist/essentia.js-core.es.js";
 
+// @ts-ignore
 import { create, ConverterType } from "https://cdn.jsdelivr.net/npm/@alexanderolsen/libsamplerate-js/dist/libsamplerate.worklet.js";
 
 import {computeFormantsBase} from "@/app/lib/DSP";
-import {mergeBuffers, outputSampleRate} from "../microphone/EnableUserMicrophone";
+import {CHUNK_SIZE, mergeBuffers, outputSampleRate} from "../microphone/EnableUserMicrophone";
+import {FormantData} from "../../ui/spectrogram/canvas/UpdatingHeatmap";
+import {SRC} from "@alexanderolsen/libsamplerate-js/dist/src";
 
 let essentia = new Essentia(EssentiaWASM);
-
 
 interface ResampledSamples {
     samples: Float32Array,
     sampleRate: number;
 }
 
+export interface RecorderProcessorMessage {
+    type: string;
+    sourceSamples: Float32Array;
+    formants: FormantData | null;
+}
+
+export const numResampledChunksInStandardChunk = CHUNK_SIZE * outputSampleRate / sampleRate
+
 class RecorderProcessor extends AudioWorkletProcessor {
     private quietNumber = 0;
     private storedBuffers: Float32Array[] = [];
     private storedBuffersLength = 0;
+    private src: SRC | null = null;
 
-    private constructor() {
+    constructor() {
         super();
         this.init();
     }
@@ -33,45 +44,62 @@ class RecorderProcessor extends AudioWorkletProcessor {
 
         create(nChannels, sampleRate, outputSampleRate, {
             converterType: ConverterType.SRC_SINC_BEST_QUALITY, // or some other quality
-        }).then((src) => {
+        }).then((src: SRC) => {
             this.src = src;
         });
     }
 
     process(inputs: Float32Array[][], outputs: Float32Array[][]) {
-        const input = inputs[0];
-        const samples = new Float32Array(input[0]);
-
-        if (input.length > 0 && this.src) {
-            // Send mono channel back to main thread
-            const resampled = this.resample(samples);
-            if (resampled) {
-                this.port.postMessage({
-                    type: 'data',
-                    samples: resampled.samples,
-                    formants: this.getFormants(resampled)
-                });
-            }
-
-        }
+        const message = this.createMessage(inputs);
+        message && this.port.postMessage(message);
         return true;
     }
 
-    private resample(samples: Float32Array): ResampledSamples | null{
-        if (sampleRate > outputSampleRate && this.src) {
-            this.storedBuffersLength += samples.length;
-            this.storedBuffers.push(samples);
+    createMessage(inputs: Float32Array[][]): RecorderProcessorMessage | null {
+        const input = inputs[0];
+        const samples = new Float32Array(input[0]);
 
-            if (this.storedBuffersLength >= 128 * outputSampleRate / sampleRate) {
-                const buffer = this.src.simple(mergeBuffers(this.storedBuffers));
-                this.storedBuffersLength = 0;
-                this.storedBuffers = [];
-                return { samples: buffer, sampleRate: outputSampleRate };
-            }
+        if (input.length <= 0) {
             return null;
         }
 
-        return { samples, sampleRate };
+        if (!this.src) {
+            return {
+                type: 'data',
+                sourceSamples: samples,
+                formants: null,
+            }
+        }
+
+        return {
+            type: 'data',
+            sourceSamples: samples,
+            formants: this.getFormants(this.resample(samples)),
+        };
+    }
+
+    private resample(samples: Float32Array): ResampledSamples | null {
+        if (sampleRate <= outputSampleRate) {
+            return { samples, sampleRate }
+        }
+
+        if (!this.src) return null;
+
+        this.storedBuffersLength += samples.length;
+        this.storedBuffers.push(samples);
+
+        if (this.storedBuffersLength < numResampledChunksInStandardChunk) {
+            return null;
+        }
+
+        const buffer = this.src.simple(mergeBuffers(this.storedBuffers));
+        this.storedBuffersLength = 0;
+        this.storedBuffers = [];
+
+        return {
+            samples: buffer,
+            sampleRate: outputSampleRate
+        };
     }
 
     private getFormants(resampledSamples: ResampledSamples | null) {

@@ -5,7 +5,7 @@ import {useMicrophoneStore} from "@/app/providers/MicrophoneProvider";
 import {useHeatmapSettings} from "@/app/stores/spectrogram/HeatmapSettingsStore";
 import {UpdatingHeatmapProps} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {getFrequencyMagnitudeData} from "@/app/lib/microphone/GetFrequencyMagnitudeData";
-import {getSampleRate} from "@/app/lib/segmenter";
+import {getResampledSampleRate} from "@/app/lib/segmenter";
 
 export interface SpectrogramDataState {
     currentColumn: number[],
@@ -65,7 +65,7 @@ export const useSpectrogram = (): UpdatingHeatmapProps => {
         userMicrophone: state.userMicrophone,
         micIsEnabled: state.userMicrophone?.enabled || false,
         fftSize: state.userMicrophone?.analyserNode?.fftSize || 4096,
-        sampleRate: getSampleRate(state.userMicrophone?.audioCtx)
+        sampleRate: getResampledSampleRate(state.userMicrophone?.audioCtx)
     }))
 
     const height = 512;
