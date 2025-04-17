@@ -4,7 +4,7 @@ import {FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {A} from "@/app/ui/A";
 import {ScrollableWindow} from "@/app/ui/FormantAdviceWindow";
 import {useHeatmapSettingsStore} from "@/app/providers/HeatmapSettingsProvider";
-import {PlayButtonSkeleton, PlayRecordingButton} from "@/app/ui/PlayRecordingButton";
+import {PlayRecordingButton} from "@/app/ui/PlayRecordingButton";
 import {AnalyzedResult} from "@/app/stores/spectrogram/PlaybackDataStore";
 
 export interface WordWithFormants extends FormantData {

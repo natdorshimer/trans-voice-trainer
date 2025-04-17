@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 
-import {SimpleStartStopButton} from "./StartStopButton";
+import {StartStopButton} from "./StartStopButton";
 import {useMicrophoneStore} from "@/app/providers/MicrophoneProvider";
 
 export const ToggleUserMicrophoneButton = () => {
@@ -16,5 +16,5 @@ export const ToggleUserMicrophoneButton = () => {
         setOn(!isOn);
     }
 
-    return <SimpleStartStopButton isOn={isOn} onClick={onClick} offText={'Start'} onText={'Stop'}/>
+    return <StartStopButton isOn={isOn} onClick={onClick} offText={'Start'} onText={'Stop'}/>
 }

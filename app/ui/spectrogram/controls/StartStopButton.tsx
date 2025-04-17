@@ -1,14 +1,15 @@
 import React from "react";
 import clsx from "clsx";
 
+export type ButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
 
-interface SimpleStartStopButtonProps extends React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> {
+interface StartStopButtonProps extends ButtonProps {
     isOn: boolean;
     onText: string;
     offText: string;
 }
 
-export const SimpleStartStopButton: React.FC<SimpleStartStopButtonProps> = ({isOn, onText, offText, ...props}) => {
+export const StartStopButton: React.FC<StartStopButtonProps> = ({isOn, onText, offText, ...props}) => {
     const colorsStopped = 'bg-cyan-700 hover:bg-blue-400 focus-visible:outline-blue-500 active:bg-blue-600'
     const colorsStarted = 'bg-red-700 hover:bg-red-400 focus-visible:outline-red-500 active:bg-red-600';
 

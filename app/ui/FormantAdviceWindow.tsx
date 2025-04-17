@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {HelperTextExpanded} from "@/app/ui/FormantAnalysis";
 import clsx from "clsx";
+import {ButtonProps} from "@/app/ui/spectrogram/controls/StartStopButton";
 
 interface WindowProps {
     onClose: () => void;
@@ -75,7 +76,7 @@ export const AdvicePanel = () => {
 }
 
 
-const StandardButton = ({...props}: React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>) => {
+const StandardButton = ({...props}: ButtonProps) => {
     const finalClassName = clsx("focus:outline-none w-11 sm:w-16 md:w-20 bg-zinc-600 hover:bg-zinc-500 text-white rounded-md p-2 text-center flex-1 max-w-24", props.className);
     return <button {...props} className={finalClassName}>
     </button>
