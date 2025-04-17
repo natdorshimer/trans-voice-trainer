@@ -45,7 +45,6 @@ function SpecPlus() {
                     <Controls/>
                 </div>
                 <div className="flex-1 w-full"> {/* Ensure children take full width in column layout */}
-                    <Playback/>
                     <AnalyzeRecording/>
                 </div>
             </div>
@@ -53,7 +52,7 @@ function SpecPlus() {
     );
 }
 
-function Playback() {
+export function Playback() {
     const analyzedResults = useAnalyzedResultStore(state => state.analyzedResults);
     const analyzedResult = analyzedResults.length > 0 ? analyzedResults[analyzedResults.length - 1] : null;
     console.log('Playback rendering. analyzedResults:', analyzedResults);

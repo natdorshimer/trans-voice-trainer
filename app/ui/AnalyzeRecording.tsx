@@ -111,7 +111,7 @@ const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, reco
         const analyzedResult = analyzedResults.length > 0 ? analyzedResults[analyzedResults.length - 1] : null;
         return (
             <div>
-                <FormantAnalysis loading={loading} analyzedWords={analyzedResult?.formants || null}/>
+                <FormantAnalysis loading={loading} analyzedResult={analyzedResult}/>
             </div>
         );
 };

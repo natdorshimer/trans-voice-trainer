@@ -4,6 +4,8 @@ import {FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {A} from "@/app/ui/A";
 import {ScrollableWindow} from "@/app/ui/FormantAdviceWindow";
 import {useHeatmapSettingsStore} from "@/app/providers/HeatmapSettingsProvider";
+import {PlayButtonSkeleton, PlayRecordingButton} from "@/app/ui/PlayRecordingButton";
+import {AnalyzedResult} from "@/app/stores/spectrogram/PlaybackDataStore";
 
 export interface WordWithFormants extends FormantData {
     word: string;
@@ -331,7 +333,7 @@ const ExpandedWordDisplay = ({wordWithFormants, onFormantClick, comparisonType}:
 };
 
 
-const FormantAnalysis = ({analyzedWords, loading}: { analyzedWords: WordWithFormants[] | null, loading: boolean }) => {
+const FormantAnalysis = ({analyzedResult, loading}: { analyzedResult: AnalyzedResult | null, loading: boolean }) => {
     const [expandedWord, setExpandedWord] = useState<WordWithFormants | null>(null);
     const [selectedFormant, setSelectedFormant] = useState<('f0_hz' | 'f1_hz' | 'f2_hz' | 'f3_hz') | null>(null);
     const [comparisonType, setComparisonType] = useState<'feminine' | 'masculine' | null>('feminine'); // Default to 'feminine'
@@ -363,8 +365,8 @@ const FormantAnalysis = ({analyzedWords, loading}: { analyzedWords: WordWithForm
     const currentAverageData = currentWordData ? wordDatabase[currentWordData.word.toLowerCase()] : undefined;
 
     const SmallWordDisplayInner = () => {
-        if (!loading && analyzedWords) {
-            return analyzedWords.map((wordData, index) => (
+        if (!loading && analyzedResult) {
+            return analyzedResult.formants.map((wordData, index) => (
                 <SmallWordDisplay
                     key={index}
                     onBoxClick={onBoxClick}
@@ -376,21 +378,23 @@ const FormantAnalysis = ({analyzedWords, loading}: { analyzedWords: WordWithForm
         }
 
         if (loading) {
-            const skeletonSize = analyzedWords?.length || 5;
+            const skeletonSize = analyzedResult?.formants?.length || 5;
             return new Array(skeletonSize).fill(0).map((_, index) =>
                 <SmallWordDisplaySkeleton key={index}/>
             );
         }
 
-        if (!analyzedWords) {
+        if (!analyzedResult) {
             return <div><p>Start recording to analyze your speech!</p></div>
         }
     }
 
     return (
         <div className="text-white bg-zinc-800 p-6 relative">
-            <h1 className="text-2xl text-center font-bold mb-4">Word Formant Analysis</h1>
-
+            <div className={'flex justify-center gap-5 mb-4'}>
+                <h1 className="text-2xl text-center font-bold">Word Formant Analysis</h1>
+                {analyzedResult ? <PlayRecordingButton analyzedResult={analyzedResult}/> : null}
+            </div>
             <div className="flex justify-center mb-4">
                 <button
                     className={`mx-2 px-4 py-2 rounded-md ${comparisonType === 'feminine' ? 'bg-zinc-600' : 'bg-zinc-700'} hover:bg-zinc-500`}
