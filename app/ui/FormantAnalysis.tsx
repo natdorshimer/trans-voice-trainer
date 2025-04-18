@@ -173,6 +173,20 @@ const getFormantColor = (
     averageFormants: GenderedFormants | undefined,
     comparisonType: "feminine" | "masculine"
 ) => {
+    const inRange = isInRange(value, formant, averageFormants, comparisonType);
+    if (inRange === undefined) {
+        return '';
+    }
+
+    return inRange ? 'text-green-400' : 'text-red-400';
+}
+
+export const isInRange = (
+    value: number,
+    formant: FormantKeys,
+    averageFormants: GenderedFormants | undefined,
+    comparisonType: "feminine" | "masculine"
+) => {
     const masculine_value = averageFormants?.masculine?.[formant];
     const feminine_value = averageFormants?.feminine?.[formant];
     const percentage = 0.1;
@@ -186,7 +200,7 @@ const getFormantColor = (
             return 'text-green-400';
         }
         const absoluteDifferenceAllowed = percentage * feminine_value;
-        return feminine_value - value > absoluteDifferenceAllowed ? 'text-red-400' : 'text-green-400';
+        return feminine_value - value <= absoluteDifferenceAllowed;
     }
 
     if (comparisonType === "masculine" && masculine_value) {
@@ -194,10 +208,10 @@ const getFormantColor = (
             return 'text-green-400';
         }
         const absoluteDifferenceAllowed = percentage * masculine_value;
-        return value - masculine_value > absoluteDifferenceAllowed ? 'text-red-400' : 'text-green-400';
+        return value - masculine_value <= absoluteDifferenceAllowed;
     }
 
-    return '';
+    return undefined;
 }
 
 const SmallWordDisplay = ({wordWithFormants, onBoxClick, onFormantClick, comparisonType}: SmallWordDisplayProps) => {

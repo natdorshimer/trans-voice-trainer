@@ -76,10 +76,9 @@ export interface AnalyzeRecordingProps {
 }
 
 const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, recordedChunks, shouldAnalyze}) => {
-    const [results, setResult] = useState<WordWithFormants[] | null>(null);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const {currentAnalyzedResult, analyzedResults, addAnalyzedResult, setCurrentAnalyzedResult} = useAnalyzedResultStore();
+    const [isError, setError] = useState<string | null>(null);
+    const {currentAnalyzedResult, addAnalyzedResult, setCurrentAnalyzedResult} = useAnalyzedResultStore();
 
     useEffect(() => {
         const analyze = async () => {
@@ -93,12 +92,10 @@ const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, reco
                     let analyzedResult = {
                         samples: preResampledSamples,
                         sampleRate: analyzer!.getSourceSampleRate(),
-                        formants: allFormants
+                        formants: allFormants,
                     };
                     setCurrentAnalyzedResult(analyzedResult);
                     addAnalyzedResult(analyzedResult)
-
-                    setResult(allFormants);
                 }
             } catch (err: any) {
                 setError(err.message || 'Analysis failed.');
