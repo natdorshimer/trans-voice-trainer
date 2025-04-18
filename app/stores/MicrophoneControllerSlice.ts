@@ -1,5 +1,5 @@
-import {enableUserMicrophone} from "../../lib/microphone/EnableUserMicrophone";
-import {UserMicrophone} from "../../lib/microphone/UserMicrophone";
+import {enableUserMicrophone} from "../lib/microphone/EnableUserMicrophone";
+import {UserMicrophone} from "../lib/microphone/UserMicrophone";
 import {AudioSettings} from "./AudioSettingsSlice";
 import {MicrophoneStore, StoreSlice} from "./MicrophoneStore";
 

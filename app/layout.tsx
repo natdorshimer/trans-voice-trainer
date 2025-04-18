@@ -2,15 +2,17 @@ import '@/app/ui/global.css';
 import React from "react";
 import {inter} from "@/app/ui/fonts";
 
-export default function Layout({children}: { children: React.ReactNode }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en">
-        <body className={`${inter.className} antialiased`}>
-        <div className="bg-zinc-800 text-white flex min-h-screen flex-col p-4">
-            <Header/>
-            {children}
-        </div>
-        </body>
+            <body className={`${inter.className} antialiased bg-zinc-800 text-white`}>
+                <div className="flex min-h-screen flex-col p-4">
+                    <Header />
+                    <main className="flex-grow">
+                        {children}
+                    </main>
+                </div>
+            </body>
         </html>
     );
 }

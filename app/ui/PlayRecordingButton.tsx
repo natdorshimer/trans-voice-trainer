@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {StartStopButton} from "@/app/ui/spectrogram/controls/StartStopButton";
-import {AnalyzedResult} from "@/app/stores/spectrogram/AnalyzedResultsStore";
+import {AnalyzedResult} from "@/app/stores/AnalyzedResultsStore";
 
 interface PlayRecordingButtonProps {
     analyzedResult: AnalyzedResult;

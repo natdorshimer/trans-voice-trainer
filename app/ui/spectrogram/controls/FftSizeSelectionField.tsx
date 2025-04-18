@@ -1,7 +1,8 @@
 import React from "react";
 
 import {SelectionInputField} from "./SelectionInputField";
-import {useMicrophoneStore} from "@/app/providers/MicrophoneProvider";
+
+import {useMicrophoneStore} from "@/app/stores/MicrophoneStore";
 
 export const FftSizeSelectionField = () => {
 

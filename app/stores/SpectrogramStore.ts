@@ -1,11 +1,11 @@
 import create from "zustand";
 import {devtools} from "zustand/middleware";
 import {useEffect, useRef, useState} from "react";
-import {useMicrophoneStore} from "@/app/providers/MicrophoneProvider";
-import {useHeatmapSettings} from "@/app/stores/spectrogram/HeatmapSettingsStore";
+import {HeatmapSettings, useHeatmapSettingsStore} from "@/app/stores/HeatmapSettingsStore";
 import {UpdatingHeatmapProps} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {getFrequencyMagnitudeData} from "@/app/lib/microphone/GetFrequencyMagnitudeData";
 import {getResampledSampleRate} from "@/app/lib/segmenter";
+import {useMicrophoneStore} from "@/app/stores/MicrophoneStore";
 
 export interface SpectrogramDataState {
     currentColumn: number[],
@@ -69,7 +69,7 @@ export const useSpectrogram = (): UpdatingHeatmapProps => {
     }))
 
     const height = 512;
-    const heatmapSettings = useHeatmapSettings()
+    const heatmapSettings = useHeatmapSettingsStore(state => state as HeatmapSettings);
     const {containerWidth, containerRef} = useDivSize();
     const formantData = userMicrophone?.currentFormants || null;
 

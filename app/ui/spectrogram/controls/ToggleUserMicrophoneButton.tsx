@@ -1,7 +1,8 @@
 import React, {useState} from "react";
 
 import {StartStopButton} from "./StartStopButton";
-import {useMicrophoneStore} from "@/app/providers/MicrophoneProvider";
+
+import {useMicrophoneStore} from "@/app/stores/MicrophoneStore";
 
 export const ToggleUserMicrophoneButton = () => {
     const {enableUserMicrophone, disableUserMicrophone} = useMicrophoneStore()

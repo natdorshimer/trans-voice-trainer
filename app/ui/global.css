@@ -41,3 +41,67 @@ input[type='number']::-webkit-outer-spin-button {
     border-bottom: 0.5em solid currentColor; /* Use current text color */
     top: 0.4em;
 }
+
+
+/* === Custom Range Slider Styles === */
+
+/* Base input element - already handled by Tailwind utilities in JSX */
+.range-slider-custom {
+    /* vertical-align: middle; */ /* Might help alignment in some layouts */
+}
+
+/* --- Track Styling --- */
+/* Webkit (Chrome, Safari, Edge) */
+.range-slider-custom::-webkit-slider-runnable-track {
+    @apply w-full h-2 bg-zinc-600 rounded-full cursor-pointer dark:bg-zinc-700;
+    /* Direct CSS equivalent:
+       width: 100%; height: 8px; background-color: #52525b; border-radius: 9999px; cursor: pointer;
+       /* Add dark mode style if not using @apply dark:bg-zinc-700 */
+}
+
+/* Firefox */
+.range-slider-custom::-moz-range-track {
+    @apply w-full h-2 bg-zinc-600 rounded-full cursor-pointer dark:bg-zinc-700;
+}
+
+/* --- Thumb Styling --- */
+/* Webkit (Chrome, Safari, Edge) */
+.range-slider-custom::-webkit-slider-thumb {
+    /* Reset appearance */
+    @apply appearance-none;
+    /* Sizing and position: Adjust negative margin to center thumb on track */
+    /* (Track height / 2) - (Thumb height / 2) = (8px / 2) - (16px / 2) = -4px */
+    @apply h-4 w-4 mt-[-4px];
+    /* Styling */
+    @apply bg-blue-500 rounded-full cursor-pointer;
+    /* Direct CSS equivalent:
+      -webkit-appearance: none; appearance: none;
+      height: 16px; width: 16px; margin-top: -4px;
+      background-color: #3b82f6; border-radius: 9999px; cursor: pointer;
+    */
+}
+/* Thumb Focus - Webkit */
+.range-slider-custom:focus::-webkit-slider-thumb {
+    @apply ring-2 ring-blue-500 ring-offset-2 ring-offset-zinc-700 dark:ring-offset-zinc-800; /* Adjust offset color */
+}
+
+
+/* Firefox */
+.range-slider-custom::-moz-range-thumb {
+    /* Reset appearance and border */
+    @apply appearance-none border-none;
+    /* Sizing */
+    @apply h-4 w-4;
+    /* Styling */
+    @apply bg-blue-500 rounded-full cursor-pointer;
+    /* Direct CSS equivalent:
+      appearance: none; border: none;
+      height: 16px; width: 16px;
+      background-color: #3b82f6; border-radius: 9999px; cursor: pointer;
+    */
+}
+/* Thumb Focus - Firefox */
+/* Firefox focus often uses outline, ring might work with @apply */
+.range-slider-custom:focus::-moz-range-thumb {
+    @apply ring-2 ring-blue-500 ring-offset-2 ring-offset-zinc-700 dark:ring-offset-zinc-800; /* Adjust offset color */
+}

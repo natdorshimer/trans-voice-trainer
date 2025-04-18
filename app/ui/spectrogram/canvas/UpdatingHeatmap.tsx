@@ -1,7 +1,7 @@
 import React from "react";
-import {HeatmapSettings} from "@/app/stores/spectrogram/HeatmapSettingsStore";
+import {HeatmapSettings} from "@/app/stores/HeatmapSettingsStore";
 import {Canvas2D, CanvasState} from "./Canvas2D";
-import {useSpectrogram} from "@/app/stores/spectrogram/SpectrogramStore";
+import {useSpectrogram} from "@/app/stores/SpectrogramStore";
 import {CanvasProps} from "@/app/ui/spectrogram/canvas/Heatmap";
 import {SpectrogramOverlay} from "@/app/ui/spectrogram/canvas/SpectrogramOverlay";
 import {CircularBuffer} from "@/app/lib/CircularBuffer"; // Import FormantData

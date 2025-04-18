@@ -1,6 +1,7 @@
 import {SelectionInputField} from "@/app/ui/spectrogram/controls/SelectionInputField";
 import React from "react";
-import {useHeatmapSettingsStore} from "@/app/providers/HeatmapSettingsProvider";
+
+import {useHeatmapSettingsStore} from "@/app/stores/HeatmapSettingsStore";
 
 
 export const HeatmapDisplayFrequencyControl = () => {

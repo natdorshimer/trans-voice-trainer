@@ -2,13 +2,13 @@ import React, {useEffect, useState} from "react";
 import FormantAnalysis from "@/app/ui/FormantAnalysis";
 import {getResampledSampleRate, getVoskSegmenter} from "@/app/lib/segmenter";
 import {getEssentiaFormantAnalyzer} from "@/app/lib/DSP";
-import {useMicrophoneStore} from "@/app/providers/MicrophoneProvider";
 import {AudioAnalyzer} from "@/app/lib/AudioAnalyzer";
 import {CircularBuffer} from "@/app/lib/CircularBuffer";
 import {Resampler} from "@/app/lib/Resampler";
-import {useAnalyzedResultStore} from "@/app/stores/spectrogram/AnalyzedResultsStore";
+import {useAnalyzedResultStore} from "@/app/stores/AnalyzedResultsStore";
 import {mergeBuffers} from "@/app/lib/microphone/EnableUserMicrophone";
 import shallow from "zustand/shallow";
+import {useMicrophoneStore} from "@/app/stores/MicrophoneStore";
 
 export const useAudioAnalyzer = (audioCtx: AudioContext | undefined) => {
     const [audioAnalyzer, setAudioAnalyzer] = useState<AudioAnalyzer | null>(null);
@@ -102,6 +102,7 @@ const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, reco
                         samples: preResampledSamples,
                         sampleRate: analyzer!.getSourceSampleRate(),
                         formants: allFormants,
+                        id: crypto.randomUUID()
                     };
                     setCurrentAnalyzedResult(analyzedResult);
                     addAnalyzedResult(analyzedResult)
