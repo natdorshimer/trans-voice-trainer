@@ -58,7 +58,7 @@ const ControlsLabel = () => {
 
         {/*</div>*/}
         <p className="block text-3xl font-bold mt-5 self-start">
-            Settings
+            Controls
         </p>
     </>;
 }
