@@ -51,15 +51,3 @@ function SpecPlus() {
         </div>
     );
 }
-
-export function Playback() {
-    const analyzedResults = useAnalyzedResultStore(state => state.analyzedResults);
-    const analyzedResult = analyzedResults.length > 0 ? analyzedResults[analyzedResults.length - 1] : null;
-    console.log('Playback rendering. analyzedResults:', analyzedResults);
-
-    if (analyzedResult) {
-        return <PlayRecordingButton analyzedResult={analyzedResult}/>;
-    } else {
-        return <></>;
-    }
-}
