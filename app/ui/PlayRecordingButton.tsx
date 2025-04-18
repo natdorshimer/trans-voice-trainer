@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { StartStopButton } from "@/app/ui/spectrogram/controls/StartStopButton";
-import { AnalyzedResult } from "@/app/stores/spectrogram/PlaybackDataStore";
+import { AnalyzedResult } from "@/app/stores/spectrogram/AnalyzedResultsStore";
 
 interface PlayRecordingButtonProps {
     analyzedResult: AnalyzedResult;
@@ -23,8 +23,8 @@ export const PlayRecordingButton: React.FC<PlayRecordingButtonProps> = ({ analyz
     return (
         <StartStopButton
             onClick={handleClick}
-            onText="Stop"
-            offText="Play"
+            onText="⏹"
+            offText="►"
             isOn={isPlaying}
             disabled={samples.length === 0}
         />

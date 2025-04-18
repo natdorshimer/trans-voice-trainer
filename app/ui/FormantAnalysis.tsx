@@ -5,7 +5,7 @@ import {A} from "@/app/ui/A";
 import {ScrollableWindow} from "@/app/ui/FormantAdviceWindow";
 import {useHeatmapSettingsStore} from "@/app/providers/HeatmapSettingsProvider";
 import {PlayRecordingButton} from "@/app/ui/PlayRecordingButton";
-import {AnalyzedResult} from "@/app/stores/spectrogram/PlaybackDataStore";
+import {AnalyzedResult} from "@/app/stores/spectrogram/AnalyzedResultsStore";
 
 export interface WordWithFormants extends FormantData {
     word: string;
@@ -391,9 +391,8 @@ const FormantAnalysis = ({analyzedResult, loading}: { analyzedResult: AnalyzedRe
 
     return (
         <div className="text-white bg-zinc-800 p-6 relative">
-            <div className={'flex justify-center gap-5 mb-4'}>
+            <div className={'flex items-center flex-row justify-center gap-5 mb-4'}>
                 <h1 className="text-2xl text-center font-bold">Word Formant Analysis</h1>
-                {analyzedResult ? <PlayRecordingButton analyzedResult={analyzedResult}/> : null}
             </div>
             <div className="flex justify-center mb-4">
                 <button

@@ -8,7 +8,7 @@ import {UpdatingHeatmap} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {Controls} from "@/app/ui/spectrogram/controls/Controls";
 import {AnalyzeRecording} from "@/app/ui/AnalyzeRecording";
 import {AdvicePanel} from "@/app/ui/FormantAdviceWindow";
-import {useAnalyzedResultStore} from "@/app/stores/spectrogram/PlaybackDataStore";
+import {useAnalyzedResultStore} from "@/app/stores/spectrogram/AnalyzedResultsStore";
 import {PlayRecordingButton} from "@/app/ui/PlayRecordingButton";
 
 

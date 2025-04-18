@@ -12,14 +12,16 @@ export interface AnalyzedResult {
 interface AnalyzedResultStore {
     analyzedResults: AnalyzedResult[];
     addAnalyzedResult: (analyzedResult: AnalyzedResult) => void;
+    savedResults: AnalyzedResult[];
+    saveResult: (analyzedResult: AnalyzedResult) => void;
 }
 
 const maxAnalyzedResults = 5;
 
-
 export const useAnalyzedResultStore = create<AnalyzedResultStore>(devtools((set, get) => (
     {
         analyzedResults: [],
+        savedResults: [],
         addAnalyzedResult: (analyzedResultEntry: AnalyzedResult) => set(state => {
             const updatedResults = [...state.analyzedResults, analyzedResultEntry];
 
@@ -36,6 +38,23 @@ export const useAnalyzedResultStore = create<AnalyzedResultStore>(devtools((set,
                     analyzedResults: updatedResults
                 };
             }
-        })
+        }),
+        saveResult: (analyzedResultEntry: AnalyzedResult) => set(state => {
+            const savedResults = [...state.savedResults, analyzedResultEntry];
+
+            if (savedResults.length > maxAnalyzedResults) {
+                const [_, ...slicedResults] = savedResults;
+                return {
+                    ...state,
+                    savedResults: slicedResults
+                };
+            } else {
+                // Return a new state object with the new (unsliced) array
+                return {
+                    ...state,
+                    savedResults
+                };
+            }
+        }),
     }
 )))

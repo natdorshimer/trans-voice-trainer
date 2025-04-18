@@ -7,6 +7,7 @@ interface StartStopButtonProps extends ButtonProps {
     isOn: boolean;
     onText: string;
     offText: string;
+    className?: string;
 }
 
 export const StartStopButton: React.FC<StartStopButtonProps> = ({isOn, onText, offText, ...props}) => {
@@ -28,7 +29,8 @@ export const StartStopButton: React.FC<StartStopButtonProps> = ({isOn, onText, o
         'focus-visible:outline-2',
         'focus-visible:outline-offset-2',
         'aria-disabled:cursor-not-allowed',
-        'aria-disabled:opacity-50'
+        'aria-disabled:opacity-50',
+        props.className || '',
     );
     return <div>
         <button

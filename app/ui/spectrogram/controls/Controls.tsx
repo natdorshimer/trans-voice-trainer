@@ -8,6 +8,8 @@ import {FaCaretDown, FaCaretUp} from "react-icons/fa";
 import {HeatmapDisplayFrequencyControl} from "@/app/ui/spectrogram/controls/HeatmapDisplayFrequencyControl";
 import {DisableHeatmapButton} from "@/app/ui/spectrogram/controls/DisableHeatmapButton";
 import {DisableAxisButton} from "@/app/ui/spectrogram/controls/DisableAxisButton";
+import {PlayRecordingButton} from "@/app/ui/PlayRecordingButton";
+import {useAnalyzedResultStore} from "@/app/stores/spectrogram/AnalyzedResultsStore";
 
 
 export const Controls = () => {
@@ -16,6 +18,13 @@ export const Controls = () => {
     const toggleExpand = () => {
         setIsExpanded(!isExpanded);
     };
+
+    const { analyzedResults } = useAnalyzedResultStore(state => ({
+        analyzedResults: state.analyzedResults,
+        savedResults: state.savedResults,
+    }));
+
+    const analyzedResult = analyzedResults.length > 0 ? analyzedResults[analyzedResults.length - 1] : null;
 
     return (
         <div className="md:px-2 gap-3 flex flex-col items-center">
@@ -27,7 +36,10 @@ export const Controls = () => {
                 </div>
 
                 <div className={"mt-2 ml-6"}>
+                    <div className='flex flex-row gap-3 mb-2'>
                     <ToggleUserMicrophoneButton/>
+                    {analyzedResult ? <PlayRecordingButton analyzedResult={analyzedResult}/> : null}
+                    </div>
                     {isExpanded && (
                         <div>
                             <DisableHeatmapButton/>

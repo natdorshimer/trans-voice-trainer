@@ -6,7 +6,7 @@ import {useMicrophoneStore} from "@/app/providers/MicrophoneProvider";
 import {AudioAnalyzer} from "@/app/lib/AudioAnalyzer";
 import {CircularBuffer} from "@/app/lib/CircularBuffer";
 import {Resampler} from "@/app/lib/Resampler";
-import {useAnalyzedResultStore} from "@/app/stores/spectrogram/PlaybackDataStore";
+import {useAnalyzedResultStore} from "@/app/stores/spectrogram/AnalyzedResultsStore";
 import {mergeBuffers} from "@/app/lib/microphone/EnableUserMicrophone";
 
 export const useAudioAnalyzer = (audioCtx: AudioContext | undefined) => {
