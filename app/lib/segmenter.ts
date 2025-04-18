@@ -13,8 +13,8 @@ export interface Segment {
 
 export async function getVoskSegmenter(): Promise<Segmenter> {
     const voskModel = await getModel();
-    const voskSegmenter = async (ctx: AudioContext, samples: Float32Array) => {
-        const result = await kaldiRecognizerSync(voskModel, ctx, samples);
+    const voskSegmenter = async (ctx: AudioContext, samples: Float32Array, sampleRate: number) => {
+        const result = await kaldiRecognizerSync(voskModel, ctx, samples, sampleRate);
         return resultToSegments(result);
     };
 
@@ -29,14 +29,13 @@ const resultToSegments = (serverMessageResult: ServerMessageResult): Segment[] =
     return segments;
 }
 
-export function getSampleRate(ctx: AudioContext | null | undefined) {
+export function getResampledSampleRate(ctx: AudioContext | null | undefined) {
     if (!ctx) return 16000;
     return Math.min(ctx.sampleRate, outputSampleRate);
 }
 
-async function kaldiRecognizerSync(model: Model, ctx: AudioContext, samples: Float32Array): Promise<ServerMessageResult> {
+async function kaldiRecognizerSync(model: Model, ctx: AudioContext, samples: Float32Array, sampleRate: number): Promise<ServerMessageResult> {
     return new Promise((resolve, reject) => {
-        let sampleRate = getSampleRate(ctx);
         const recognizer = new model.KaldiRecognizer(sampleRate);
         recognizer.setWords(true)
         recognizer.on("result", (message) => {

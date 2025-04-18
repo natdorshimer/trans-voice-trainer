@@ -1,41 +1,44 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect} from "react";
 import clsx from "clsx";
 
-export const StartStopButton: React.FC<StartStopButtonParams> = (params) => {
-    const {buttonState, onClick} = useStartStopButton(params)
+export type ButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
 
-    const buttonRef = useRef<HTMLButtonElement>(null);
+interface StartStopButtonProps extends ButtonProps {
+    isOn: boolean;
+    onText: string;
+    offText: string;
+    className?: string;
+    controlKey?: string; // Key to listen for to toggle the button
+}
 
-    const handleKeyDown: EventListenerOrEventListenerObject = (event: Event) => {
-        // Check if the pressed key is Enter or Space
-        if ((event as KeyboardEvent).key === ' ') {
-            // Prevent the default action of Enter/Space on some elements
-            event.preventDefault();
-            // Programmatically trigger the button's onClick handler
-            onClick();
-        }
-    };
+export const StartStopButton: React.FC<StartStopButtonProps> = ({ isOn, onText, offText, controlKey, onClick, ...props }) => {
+    const colorsStopped = 'bg-cyan-700 hover:bg-blue-400 focus-visible:outline-blue-500 active:bg-blue-600'
+    const colorsStarted = 'bg-red-700 hover:bg-red-400 focus-visible:outline-red-500 active:bg-red-600';
 
-    // Attach the event listener to the component containing the button
     useEffect(() => {
-        const parentElement = buttonRef.current ? buttonRef.current.parentElement : document; // Or document if no parent
-
-        if (parentElement) {
-            parentElement.addEventListener('keydown', handleKeyDown);
-        }
-
-        return () => {
-            if (parentElement) {
-                parentElement.removeEventListener('keydown', handleKeyDown);
+        const handleKeyDown = (event: KeyboardEvent) => {
+            // Check if the pressed key matches the controlKey prop and if the button is not disabled
+            if (controlKey && event.key.toLowerCase() === controlKey.toLowerCase() && !props.disabled) {
+                // Prevent the default action of the key press
+                event.preventDefault();
+                // Trigger the button's onClick handler
+                if (onClick) {
+                    onClick(event as any); // Cast to any to satisfy the onClick signature
+                }
             }
         };
-    }, [onClick]); // Re-run effect if onClick changes (though unlikely)
 
-    const colorsStarted = 'bg-cyan-700 hover:bg-blue-400 focus-visible:outline-blue-500 active:bg-blue-600'
-    const colorsStopped = 'bg-red-700 hover:bg-red-400 focus-visible:outline-red-500 active:bg-red-600';
+        // Add the event listener when the component mounts or controlKey/onClick/disabled changes
+        window.addEventListener('keydown', handleKeyDown);
+
+        // Remove the event listener when the component unmounts or controlKey/onClick/disabled changes
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [controlKey, onClick, props.disabled]); // Depend on controlKey, onClick, and disabled prop
 
     const className = clsx(
-        buttonState == ButtonState.Stop ? colorsStopped : colorsStarted,
+        isOn ? colorsStarted : colorsStopped,
         'flex',
         'h-10',
         'items-center',
@@ -49,41 +52,21 @@ export const StartStopButton: React.FC<StartStopButtonParams> = (params) => {
         'focus-visible:outline-2',
         'focus-visible:outline-offset-2',
         'aria-disabled:cursor-not-allowed',
-        'aria-disabled:opacity-50'
+        'aria-disabled:opacity-50',
+        props.className || '',
     );
-    return <div>
-        <button
-            onClick={onClick}
-            className={className}
-        >
-            {buttonState}
-        </button>
-    </div>
-}
 
-
-const useStartStopButton = (params: StartStopButtonParams) => {
-    const {onStart, onStop, buttonStateDefault} = params
-    const defaultState = buttonStateDefault ? buttonStateDefault : ButtonState.Start
-
-    const [buttonState, setButtonState] = useState<ButtonState>(defaultState)
-
-    const newStateMapping: NewStateMapping = {
-        [ButtonState.Start]: [onStart, ButtonState.Stop],
-        [ButtonState.Stop]: [onStop, ButtonState.Start],
-    };
-
-    const [action, newState] = newStateMapping[buttonState]
-
-    const onClick = () => {
-        action()
-        setButtonState(newState)
-    }
-
-    return {
-        buttonState,
-        onClick
-    }
+    return (
+        <div>
+            <button
+                {...props}
+                className={className}
+                onClick={onClick} // Ensure the original onClick is still passed to the button
+            >
+                {isOn ? onText : offText}
+            </button>
+        </div>
+    );
 }
 
 export const StandardSpectrogramButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = (props) => {
@@ -92,62 +75,4 @@ export const StandardSpectrogramButton: React.FC<React.ButtonHTMLAttributes<HTML
         className={'bg-cyan-700 hover:bg-blue-400 focus-visible:outline-blue-500 active:bg-blue-600 items-center rounded-lg px-4 text-sm font-medium text-white transition-colors h-10 flex h-10 items-center rounded-lg px-4 text-sm font-medium text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 mt-2' + props.className}
         {...innerProps}
     ></button>
-}
-
-export const OnOffButton: React.FC<OnOffButtonParams> = (params) => {
-    const on = params.on || false;
-    const onClick = () => params.setOn(!on);
-
-    const colorsStarted = 'bg-cyan-700 hover:bg-blue-400 focus-visible:outline-blue-500 active:bg-blue-600'
-    const colorsStopped = 'bg-red-700 hover:bg-red-400 focus-visible:outline-red-500 active:bg-red-600';
-
-    const className = clsx(
-        on ? colorsStarted : colorsStopped,
-        'flex',
-        'h-10',
-        'items-center',
-        'rounded-lg',
-        'px-4',
-        'text-sm',
-        'font-medium',
-        'text-white',
-        'transition-colors',
-        'focus-visible:outline',
-        'focus-visible:outline-2',
-        'focus-visible:outline-offset-2',
-        'aria-disabled:cursor-not-allowed',
-        'aria-disabled:opacity-50'
-    );
-    return <div>
-        <button
-            onClick={onClick}
-            className={className}
-        >
-            {on ? params.onText : params.offText}
-        </button>
-    </div>
-}
-
-type NewState = [action: () => void, state: ButtonState]
-type NewStateMapping = {
-    [key in ButtonState]: NewState;
-};
-
-enum ButtonState {
-    Start = "Start",
-    Stop = "Stop",
-}
-
-interface StartStopButtonParams {
-    onStart: () => void,
-    onStop: () => void,
-    buttonStateDefault?: ButtonState
-}
-
-interface OnOffButtonParams {
-    onText: string,
-    offText: string,
-    setOn: (state: boolean) => void,
-    on?: boolean,
-    keyControl?: string
 }

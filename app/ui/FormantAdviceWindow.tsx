@@ -1,14 +1,16 @@
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {HelperTextExpanded} from "@/app/ui/FormantAnalysis";
 import clsx from "clsx";
+import {ButtonProps} from "@/app/ui/spectrogram/controls/StartStopButton";
 
 interface WindowProps {
     onClose: () => void;
     children: React.ReactNode;
-    header: string;
+    isOpen?: boolean;
+    header?: string;
 }
 
-export const ScrollableWindow: React.FC<WindowProps> = ({onClose, children, header}) => {
+export const ScrollableWindow: React.FC<WindowProps> = ({onClose, children, header, isOpen}) => {
     const windowRef = useRef<HTMLDivElement>(null);
 
     const handleClickOutside = useCallback((event: MouseEvent) => {
@@ -33,8 +35,12 @@ export const ScrollableWindow: React.FC<WindowProps> = ({onClose, children, head
         };
     }, [handleClickOutside, handleEscapeKey]);
 
+    if (isOpen !== undefined && !isOpen) {
+        return <></>;
+    }
+
     return <div ref={windowRef} className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-900 text-white p-6 rounded-md shadow-lg z-10 text-center flex flex-col max-w-lg w-full">
-        <h2 className="text-xl font-semibold mb-4 flex-shrink-0">{header}</h2>
+        {header ? <h2 className="text-xl font-semibold mb-4 flex-shrink-0">{header}</h2> : ''}
         <div className="mb-4 overflow-y-auto max-h-[60vh]">
             {children}
         </div>
@@ -75,7 +81,7 @@ export const AdvicePanel = () => {
 }
 
 
-const StandardButton = ({...props}: React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>) => {
+const StandardButton = ({...props}: ButtonProps) => {
     const finalClassName = clsx("focus:outline-none w-11 sm:w-16 md:w-20 bg-zinc-600 hover:bg-zinc-500 text-white rounded-md p-2 text-center flex-1 max-w-24", props.className);
     return <button {...props} className={finalClassName}>
     </button>

@@ -2,13 +2,20 @@ import {UserMicrophone} from "@/app/lib/microphone/UserMicrophone";
 import {FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {CircularBuffer} from "@/app/lib/CircularBuffer";
 import {AudioSettings} from "@/app/stores/spectrogram/AudioSettingsSlice";
-import {getSampleRate} from "@/app/lib/segmenter";
+import {getResampledSampleRate} from "@/app/lib/segmenter";
+import {RecorderProcessorMessage} from "@/app/lib/audio-worklet/recorder-processor";
 
 export const outputSampleRate = 22000;
 
+export const CHUNK_SIZE = 128;
+
+function getBufferSizeBySeconds(audioCtx: AudioContext, seconds: number) {
+    const chunksPerSecond = Math.floor(audioCtx.sampleRate / CHUNK_SIZE);
+    return chunksPerSecond * seconds;
+}
+
 export const enableUserMicrophone = async (
-    audioSettings: AudioSettings,
-    previousChunks: CircularBuffer<Float32Array> | undefined = undefined
+    audioSettings: AudioSettings
 ): Promise<UserMicrophone> => {
     const stream = await navigator
         .mediaDevices
@@ -35,18 +42,20 @@ export const enableUserMicrophone = async (
 
     streamSource.connect(analyserNode);
     streamSource.connect(recorderNode);
+    let bufferSize = getBufferSizeBySeconds(audioCtx, 10);
 
-    const recordedChunks = previousChunks || new CircularBuffer<Float32Array>(60 * 10);
+    const recordedChunks = new CircularBuffer<Float32Array>(bufferSize);
     const formantData = new CircularBuffer<FormantData>(20);
 
     recorderNode.port.onmessage = async (event) => {
-        if (event.data.type === 'data') {
-            const samples: Float32Array = event.data.samples;
-            recordedChunks.push(samples);
+        let data = event.data as RecorderProcessorMessage;
 
-            const formants: FormantData | null = event.data.formants;
+        if (data.type === 'data') {
+           recordedChunks.push(data.sourceSamples);
+
+            const formants = data.formants;
             if (formants) {
-                formantData.push(event.data.formants);
+                formantData.push(formants);
             } else {
                 formantData.clear();
             }
@@ -54,7 +63,7 @@ export const enableUserMicrophone = async (
     };
 
     analyserNode.smoothingTimeConstant = 0;
-    analyserNode.fftSize = Math.pow(2, Math.floor(Math.log2(getSampleRate(audioCtx) / 4)))
+    analyserNode.fftSize = Math.pow(2, Math.floor(Math.log2(getResampledSampleRate(audioCtx) / 4)))
 
     return {
         analyserNode,

@@ -8,6 +8,8 @@ import {UpdatingHeatmap} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {Controls} from "@/app/ui/spectrogram/controls/Controls";
 import {AnalyzeRecording} from "@/app/ui/AnalyzeRecording";
 import {AdvicePanel} from "@/app/ui/FormantAdviceWindow";
+import {useAnalyzedResultStore} from "@/app/stores/spectrogram/AnalyzedResultsStore";
+import {PlayRecordingButton} from "@/app/ui/PlayRecordingButton";
 
 
 const Spectrogram = () => {
@@ -50,3 +52,14 @@ function SpecPlus() {
     );
 }
 
+export function Playback() {
+    const analyzedResults = useAnalyzedResultStore(state => state.analyzedResults);
+    const analyzedResult = analyzedResults.length > 0 ? analyzedResults[analyzedResults.length - 1] : null;
+    console.log('Playback rendering. analyzedResults:', analyzedResults);
+
+    if (analyzedResult) {
+        return <PlayRecordingButton analyzedResult={analyzedResult}/>;
+    } else {
+        return <></>;
+    }
+}

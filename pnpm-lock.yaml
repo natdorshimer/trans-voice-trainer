@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@alexanderolsen/libsamplerate-js':
+        specifier: ^2.1.2
+        version: 2.1.2
       '@tailwindcss/forms':
         specifier: ^0.5.10
         version: 0.5.10(tailwindcss@3.4.17)
@@ -66,6 +69,9 @@ importers:
         specifier: ^3.6.0
         version: 3.7.2(react@19.0.0)
     devDependencies:
+      '@types/audioworklet':
+        specifier: ^0.0.72
+        version: 0.0.72
       '@types/node':
         specifier: 22.10.7
         version: 22.10.7
@@ -83,6 +89,9 @@ importers:
         version: 16.1.0(postcss@8.5.1)
 
 packages:
+
+  '@alexanderolsen/libsamplerate-js@2.1.2':
+    resolution: {integrity: sha512-pIXQDX/DZIgz6pKInUddDd6Tnq/s2E9g4ZITkKX60kxM/nAuZcxYa/z0y/jwJbjyp/oKe+8/qHLSqMzQ18xSiQ==}
 
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -466,6 +475,9 @@ packages:
     resolution: {integrity: sha512-utI1ONF6uf/pPNO68kmN1b8rEwNXv3czukalo8VtJH8ksIkZXr3Q3VYudZLkCsDd4Wku120uF02hYK25XGPorw==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || >= 3.0.0-alpha.1 || >= 4.0.0-alpha.20 || >= 4.0.0-beta.1'
+
+  '@types/audioworklet@0.0.72':
+    resolution: {integrity: sha512-qrsjMZxB0k5DJSLpcDXlX/OYa5iDEAc9dgEwCZO1op5jka7Jgc/fMEGq8LuHO+8MmpOInqco6hET1gawCTVeEg==}
 
   '@types/cookie@0.6.0':
     resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
@@ -1243,6 +1255,8 @@ packages:
 
 snapshots:
 
+  '@alexanderolsen/libsamplerate-js@2.1.2': {}
+
   '@alloc/quick-lru@5.2.0': {}
 
   '@auth/core@0.37.2':
@@ -1493,6 +1507,8 @@ snapshots:
     dependencies:
       mini-svg-data-uri: 1.4.4
       tailwindcss: 3.4.17
+
+  '@types/audioworklet@0.0.72': {}
 
   '@types/cookie@0.6.0': {}
 
