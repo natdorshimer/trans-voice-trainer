@@ -1,17 +1,12 @@
 import React, {useState} from "react";
-
-import {FftSizeSelectionField} from "./FftSizeSelectionField";
 import {MaxValueSlider} from "./MaxValueSlider";
 import {SampleRateSelectionField} from "./SampleRateSelection";
 import {ToggleUserMicrophoneButton} from "./ToggleUserMicrophoneButton";
 import {FaCaretDown, FaCaretUp} from "react-icons/fa";
 import {HeatmapDisplayFrequencyControl} from "@/app/ui/spectrogram/controls/HeatmapDisplayFrequencyControl";
 import {DisableHeatmapButton} from "@/app/ui/spectrogram/controls/DisableHeatmapButton";
-import {DisableAxisButton} from "@/app/ui/spectrogram/controls/DisableAxisButton";
 import {PlayRecordingButton} from "@/app/ui/PlayRecordingButton";
 import {useAnalyzedResultStore} from "@/app/stores/spectrogram/AnalyzedResultsStore";
-import {AnalyzedResultSelectionModal, SelectAnalyzedResult} from "@/app/ui/spectrogram/controls/SelectAnalyzedResult";
-import {SaveAnalyzedResult} from "@/app/ui/spectrogram/controls/SaveAnalyzedResult";
 
 
 export const Controls = () => {

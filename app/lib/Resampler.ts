@@ -1,6 +1,6 @@
 import {SRC} from "@alexanderolsen/libsamplerate-js/dist/src";
 import {outputSampleRate} from "@/app/lib/microphone/EnableUserMicrophone";
-import {create, ConverterType} from "@alexanderolsen/libsamplerate-js";
+import {ConverterType, create} from "@alexanderolsen/libsamplerate-js";
 
 export class Resampler {
     private readonly inputSampleRate: number;

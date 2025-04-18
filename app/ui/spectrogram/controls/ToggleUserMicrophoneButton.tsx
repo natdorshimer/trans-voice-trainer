@@ -16,5 +16,5 @@ export const ToggleUserMicrophoneButton = () => {
         setOn(!isOn);
     }
 
-    return <StartStopButton isOn={isOn} onClick={onClick} offText={'Start'} onText={'Stop'}/>
+    return <StartStopButton isOn={isOn} onClick={onClick} offText={'Start'} onText={'Stop'} controlKey={' '}/>
 }

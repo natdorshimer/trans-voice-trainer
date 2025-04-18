@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import FormantAnalysis, {WordWithFormants} from "@/app/ui/FormantAnalysis";
+import FormantAnalysis from "@/app/ui/FormantAnalysis";
 import {getResampledSampleRate, getVoskSegmenter} from "@/app/lib/segmenter";
 import {getEssentiaFormantAnalyzer} from "@/app/lib/DSP";
 import {useMicrophoneStore} from "@/app/providers/MicrophoneProvider";

@@ -1,7 +1,6 @@
-import { AnalyzedResult, useAnalyzedResultStore } from "@/app/stores/spectrogram/AnalyzedResultsStore";
-import { useState } from "react";
-import { ScrollableWindow } from "@/app/ui/FormantAdviceWindow";
-import {StandardSpectrogramButton} from "@/app/ui/spectrogram/controls/StartStopButton";
+import {AnalyzedResult, useAnalyzedResultStore} from "@/app/stores/spectrogram/AnalyzedResultsStore";
+import {useState} from "react";
+import {ScrollableWindow} from "@/app/ui/FormantAdviceWindow";
 
 // Fix the shorten function
 function shorten(text: string, maxLength: number = 3): string {

@@ -1,8 +1,5 @@
-import {getResampledSampleRate, Segment} from "@/app/lib/segmenter";
+import {Segment} from "@/app/lib/segmenter";
 import {WordWithFormants} from "@/app/ui/FormantAnalysis";
-import {mergeBuffers, outputSampleRate} from "@/app/lib/microphone/EnableUserMicrophone";
-import {CircularBuffer} from "@/app/lib/CircularBuffer";
-import {SRC} from "@alexanderolsen/libsamplerate-js/dist/src";
 import {Resampler} from "@/app/lib/Resampler";
 
 export type Segmenter = (ctx: AudioContext, samples: Float32Array, sampleRate: number) => Promise<Segment[]>;

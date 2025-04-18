@@ -4,7 +4,6 @@ import {FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {A} from "@/app/ui/A";
 import {ScrollableWindow} from "@/app/ui/FormantAdviceWindow";
 import {useHeatmapSettingsStore} from "@/app/providers/HeatmapSettingsProvider";
-import {PlayRecordingButton} from "@/app/ui/PlayRecordingButton";
 import {AnalyzedResult} from "@/app/stores/spectrogram/AnalyzedResultsStore";
 import {AnalyzedResultSelectionModal} from "@/app/ui/spectrogram/controls/SelectAnalyzedResult";
 import {SaveAnalyzedResult} from "@/app/ui/spectrogram/controls/SaveAnalyzedResult";
