@@ -6,10 +6,11 @@ import {ButtonProps} from "@/app/ui/spectrogram/controls/StartStopButton";
 interface WindowProps {
     onClose: () => void;
     children: React.ReactNode;
-    header: string;
+    isOpen?: boolean;
+    header?: string;
 }
 
-export const ScrollableWindow: React.FC<WindowProps> = ({onClose, children, header}) => {
+export const ScrollableWindow: React.FC<WindowProps> = ({onClose, children, header, isOpen}) => {
     const windowRef = useRef<HTMLDivElement>(null);
 
     const handleClickOutside = useCallback((event: MouseEvent) => {
@@ -34,8 +35,12 @@ export const ScrollableWindow: React.FC<WindowProps> = ({onClose, children, head
         };
     }, [handleClickOutside, handleEscapeKey]);
 
+    if (isOpen !== undefined && !isOpen) {
+        return <></>;
+    }
+
     return <div ref={windowRef} className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-900 text-white p-6 rounded-md shadow-lg z-10 text-center flex flex-col max-w-lg w-full">
-        <h2 className="text-xl font-semibold mb-4 flex-shrink-0">{header}</h2>
+        {header ? <h2 className="text-xl font-semibold mb-4 flex-shrink-0">{header}</h2> : ''}
         <div className="mb-4 overflow-y-auto max-h-[60vh]">
             {children}
         </div>

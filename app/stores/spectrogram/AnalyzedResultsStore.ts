@@ -44,6 +44,10 @@ export const useAnalyzedResultStore = create<AnalyzedResultStore>(devtools((set,
             }
         }),
         saveResult: (analyzedResultEntry: AnalyzedResult) => set(state => {
+            if (state.savedResults.includes(analyzedResultEntry)) {
+                return
+            }
+
             const savedResults = [...state.savedResults, analyzedResultEntry];
 
             if (savedResults.length > maxAnalyzedResults) {

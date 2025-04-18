@@ -10,7 +10,7 @@ import {DisableHeatmapButton} from "@/app/ui/spectrogram/controls/DisableHeatmap
 import {DisableAxisButton} from "@/app/ui/spectrogram/controls/DisableAxisButton";
 import {PlayRecordingButton} from "@/app/ui/PlayRecordingButton";
 import {useAnalyzedResultStore} from "@/app/stores/spectrogram/AnalyzedResultsStore";
-import {SelectAnalyzedResult} from "@/app/ui/spectrogram/controls/SelectAnalyzedResult";
+import {AnalyzedResultSelectionModal, SelectAnalyzedResult} from "@/app/ui/spectrogram/controls/SelectAnalyzedResult";
 import {SaveAnalyzedResult} from "@/app/ui/spectrogram/controls/SaveAnalyzedResult";
 
 
@@ -44,10 +44,10 @@ export const Controls = () => {
                         {analyzedResult ? <PlayRecordingButton analyzedResult={analyzedResult}/> : null}
                     </div>
                     {isExpanded && (
-                    <div>
-                        <SelectAnalyzedResult/>
+                    <div >
+                        <AnalyzedResultSelectionModal/>
                         <SaveAnalyzedResult/>
-                        <div>
+                        <div className = "mt-2">
                             <DisableHeatmapButton/>
                             <MaxValueSlider/>
                             <HeatmapDisplayFrequencyControl/>
