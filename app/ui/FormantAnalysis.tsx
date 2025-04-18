@@ -7,6 +7,7 @@ import {useHeatmapSettingsStore} from "@/app/providers/HeatmapSettingsProvider";
 import {AnalyzedResult} from "@/app/stores/spectrogram/AnalyzedResultsStore";
 import {AnalyzedResultSelectionModal} from "@/app/ui/spectrogram/controls/SelectAnalyzedResult";
 import {SaveAnalyzedResult} from "@/app/ui/spectrogram/controls/SaveAnalyzedResult";
+import {DownloadResult} from "@/app/ui/spectrogram/controls/DownloadResult";
 
 export interface WordWithFormants extends FormantData {
     word: string;
@@ -411,6 +412,7 @@ const FormantAnalysis = ({analyzedResult, loading}: { analyzedResult: AnalyzedRe
                 <div className={'flex flex-row gap-3'}>
                     <AnalyzedResultSelectionModal/>
                     <SaveAnalyzedResult/>
+                    <DownloadResult/>
                 </div>
             </div>
             <div className="flex justify-center mb-4">
