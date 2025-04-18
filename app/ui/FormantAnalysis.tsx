@@ -408,8 +408,8 @@ const FormantAnalysis = ({analyzedResult, loading}: { analyzedResult: AnalyzedRe
         <div className="text-white bg-zinc-800 p-6 relative">
             <div className={'flex flex-col items-center justify-center gap-5 mb-4'}>
                 <h1 className="text-2xl text-center font-bold">Word Formant Analysis</h1>
-                <div className={'flex flex-row gap-5'}>
-                <AnalyzedResultSelectionModal/>
+                <div className={'flex flex-row gap-3'}>
+                    <AnalyzedResultSelectionModal/>
                     <SaveAnalyzedResult/>
                 </div>
             </div>
