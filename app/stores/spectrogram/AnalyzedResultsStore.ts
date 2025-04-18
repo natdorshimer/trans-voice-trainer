@@ -48,18 +48,22 @@ export const useAnalyzedResultStore = create<AnalyzedResultStore>(devtools((set,
                 return
             }
 
+            let analyzedResults = state.analyzedResults.filter(it => it !== analyzedResultEntry);
+
             const savedResults = [...state.savedResults, analyzedResultEntry];
 
             if (savedResults.length > maxAnalyzedResults) {
                 const [_, ...slicedResults] = savedResults;
                 return {
                     ...state,
+                    analyzedResults,
                     savedResults: slicedResults
                 };
             } else {
                 // Return a new state object with the new (unsliced) array
                 return {
                     ...state,
+                    analyzedResults,
                     savedResults
                 };
             }
