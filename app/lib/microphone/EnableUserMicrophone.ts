@@ -1,7 +1,7 @@
 import {UserMicrophone} from "@/app/lib/microphone/UserMicrophone";
 import {FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {CircularBuffer} from "@/app/lib/CircularBuffer";
-import {AudioSettings} from "@/app/stores/spectrogram/AudioSettingsSlice";
+import {AudioSettings} from "@/app/stores/AudioSettingsSlice";
 import {getResampledSampleRate} from "@/app/lib/segmenter";
 import {RecorderProcessorMessage} from "@/app/lib/audio-worklet/recorder-processor";
 

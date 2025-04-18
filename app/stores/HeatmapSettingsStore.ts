@@ -1,7 +1,6 @@
 import create from "zustand";
 import {devtools} from "zustand/middleware";
 
-import {useHeatmapSettingsStore} from "../../providers/HeatmapSettingsProvider";
 import {Color, Scale, scale} from "chroma.ts";
 import {FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 
@@ -45,4 +44,4 @@ export const createHeatmapSettingsStore = () => create<HeatmapSettingsStore>(dev
     setSelectedFormant: (newState: FormantData) => set(state => ({...state, selectedFormant: newState}))
 })))
 
-export const useHeatmapSettings = () => useHeatmapSettingsStore(state => state as HeatmapSettings)
+export const useHeatmapSettingsStore = createHeatmapSettingsStore();

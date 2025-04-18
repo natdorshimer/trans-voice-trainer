@@ -1,5 +1,5 @@
 import {StandardSpectrogramButton} from "@/app/ui/spectrogram/controls/StartStopButton";
-import {useAnalyzedResultStore} from "@/app/stores/spectrogram/AnalyzedResultsStore";
+import {useAnalyzedResultStore} from "@/app/stores/AnalyzedResultsStore";
 
 const DownloadIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-download"
                  viewBox="0 0 16 16">
@@ -10,7 +10,7 @@ const DownloadIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" he
 </svg>;
 
 export const DownloadResult = () => {
-    const { currentAnalyzedResult } = useAnalyzedResultStore();
+    const currentAnalyzedResult = useAnalyzedResultStore(state => state.currentAnalyzedResult);
     if (!currentAnalyzedResult) {
         return <></>
     }

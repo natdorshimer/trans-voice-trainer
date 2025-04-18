@@ -17,3 +17,5 @@ export const createMicrophoneStore = () => create<MicrophoneStore>(devtools((set
     ...createAudioSettingsSlice(set, get),
     ...createMicrophoneControllerSlice(set, get)
 })))
+
+export const useMicrophoneStore = createMicrophoneStore();

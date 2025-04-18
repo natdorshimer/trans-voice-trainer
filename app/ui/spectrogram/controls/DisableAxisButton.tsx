@@ -1,6 +1,7 @@
 import {StandardSpectrogramButton} from "@/app/ui/spectrogram/controls/StartStopButton";
 import React from "react";
-import {useHeatmapSettingsStore} from "@/app/providers/HeatmapSettingsProvider";
+
+import {useHeatmapSettingsStore} from "@/app/stores/HeatmapSettingsStore";
 
 export const DisableAxisButton = () => {
     const { isOverlayEnabled, setIsOverlayEnabled } = useHeatmapSettingsStore(state => ({

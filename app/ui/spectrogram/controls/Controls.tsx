@@ -6,7 +6,7 @@ import {FaCaretDown, FaCaretUp} from "react-icons/fa";
 import {HeatmapDisplayFrequencyControl} from "@/app/ui/spectrogram/controls/HeatmapDisplayFrequencyControl";
 import {DisableHeatmapButton} from "@/app/ui/spectrogram/controls/DisableHeatmapButton";
 import {PlayRecordingButton} from "@/app/ui/PlayRecordingButton";
-import {useAnalyzedResultStore} from "@/app/stores/spectrogram/AnalyzedResultsStore";
+import {useAnalyzedResultStore} from "@/app/stores/AnalyzedResultsStore";
 
 
 export const Controls = () => {
@@ -16,13 +16,7 @@ export const Controls = () => {
         setIsExpanded(!isExpanded);
     };
 
-    const { currentAnalyzedResult } = useAnalyzedResultStore(state => ({
-        analyzedResults: state.analyzedResults,
-        savedResults: state.savedResults,
-        currentAnalyzedResult: state.currentAnalyzedResult
-    }));
-
-    const analyzedResult = currentAnalyzedResult;
+    const analyzedResult = useAnalyzedResultStore(state => state.currentAnalyzedResult);
 
     return (
         <div className="md:px-2 gap-3 flex flex-col items-center">

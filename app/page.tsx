@@ -1,35 +1,24 @@
 'use client';
 
-import {MicrophoneProvider} from "@/app/providers/MicrophoneProvider";
-import {HeatmapSettingsProvider} from "@/app/providers/HeatmapSettingsProvider";
-import {useSpectrogram} from "@/app/stores/spectrogram/SpectrogramStore";
+import {useSpectrogram} from "@/app/stores/SpectrogramStore";
 import React from "react";
 import {UpdatingHeatmap} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {Controls} from "@/app/ui/spectrogram/controls/Controls";
 import {AnalyzeRecording} from "@/app/ui/AnalyzeRecording";
 import {AdvicePanel} from "@/app/ui/FormantAdviceWindow";
-import {useAnalyzedResultStore} from "@/app/stores/spectrogram/AnalyzedResultsStore";
-import {PlayRecordingButton} from "@/app/ui/PlayRecordingButton";
 
+export default function Page() {
+    return (
+        <main>
+            <SpecPlus/>
+        </main>
+    );
+};
 
 const Spectrogram = () => {
     return <UpdatingHeatmap {...useSpectrogram()}/>;
 };
 
-
-export default function Page() {
-    return (
-        <main>
-            <div>
-                <MicrophoneProvider>
-                    <HeatmapSettingsProvider>
-                        <SpecPlus/>
-                    </HeatmapSettingsProvider>
-                </MicrophoneProvider>
-            </div>
-        </main>
-    );
-};
 
 function SpecPlus() {
     return (

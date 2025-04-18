@@ -3,11 +3,11 @@ import wd from '@/public/formant_data.json';
 import {FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {A} from "@/app/ui/A";
 import {ScrollableWindow} from "@/app/ui/FormantAdviceWindow";
-import {useHeatmapSettingsStore} from "@/app/providers/HeatmapSettingsProvider";
-import {AnalyzedResult} from "@/app/stores/spectrogram/AnalyzedResultsStore";
+import {AnalyzedResult} from "@/app/stores/AnalyzedResultsStore";
 import {AnalyzedResultSelectionModal} from "@/app/ui/spectrogram/controls/SelectAnalyzedResult";
 import {SaveAnalyzedResult} from "@/app/ui/spectrogram/controls/SaveAnalyzedResult";
 import {DownloadResult} from "@/app/ui/spectrogram/controls/DownloadResult";
+import {useHeatmapSettingsStore} from "@/app/stores/HeatmapSettingsStore";
 
 export interface WordWithFormants extends FormantData {
     word: string;
@@ -173,7 +173,7 @@ const getFormantColor = (
     value: number,
     formant: FormantKeys,
     averageFormants: GenderedFormants | undefined,
-    comparisonType: "feminine" | "masculine"
+    comparisonType: "feminine" | "masculine" | null,
 ) => {
     const inRange = isInRange(value, formant, averageFormants, comparisonType);
     if (inRange === undefined) {
@@ -187,7 +187,7 @@ export const isInRange = (
     value: number,
     formant: FormantKeys,
     averageFormants: GenderedFormants | undefined,
-    comparisonType: "feminine" | "masculine"
+    comparisonType: "feminine" | "masculine" | undefined
 ) => {
     const masculine_value = averageFormants?.masculine?.[formant];
     const feminine_value = averageFormants?.feminine?.[formant];
@@ -330,16 +330,19 @@ const ExpandedWordDisplay = ({wordWithFormants, onFormantClick, comparisonType}:
 
     return (
         <div className="mb-4 p-4 rounded-md shadow-md bg-zinc-700 text-white">
-            <h2 className="text-xl font-semibold mb-2">{word}</h2>
+            <h2 className="text-xl font-semibold mb-2 text-center">{word}</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {keys.map((key, index) => (
-                    <button key={index} onClick={() => onFormantClick(key, wordWithFormants)} className="focus:outline-none">
-                        <div className="bg-zinc-600 hover:bg-zinc-500 text-white rounded-md p-2 text-center w-24">
-                            <div className="font-semibold">{key.toUpperCase().replace('_HZ', '')}</div>
-                            <div>Value: {key}</div>
+                {keys.map((key, index) =>  {
+                    let formantValue = formants[key];
+                    let formantColor = getFormantColor(formantValue, key, foundWord, comparisonType);
+                    return <button key={index} onClick={() => onFormantClick(key, wordWithFormants)} className="focus:outline-none">
+                        <div className="bg-zinc-600 hover:bg-zinc-500 font-semibold text-white rounded-md p-2 text-center w-24">
+                            <div>{key.toUpperCase().replace('_HZ', '')}</div>
+                            <div className={`${formantColor}`}>{formantValue} hz</div>
                         </div>
                     </button>
-                ))}
+                    }
+                )}
             </div>
             {!foundWord && (
                 <p className="mt-2 text-sm italic">No average formant data found for this word.</p>
@@ -362,7 +365,6 @@ const FormantAnalysis = ({analyzedResult, loading}: { analyzedResult: AnalyzedRe
 
     const onBoxClick = (wordWithFormants: WordWithFormants) => {
         setExpandedWord(wordWithFormants);
-        console.log("Selected word ", wordWithFormants.word);
         const gender = comparisonType || 'feminine';
         if (wordDatabase) {
             const foundWord = wordDatabase[wordWithFormants.word];

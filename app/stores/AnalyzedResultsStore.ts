@@ -1,12 +1,14 @@
+'use client';
+
 import {WordWithFormants} from "@/app/ui/FormantAnalysis";
-import create from "zustand";
-import {devtools} from "zustand/middleware";
+import {createHydrationSafeStore} from "@/app/stores/IndexedDbStore";
 
 
 export interface AnalyzedResult {
     samples: Float32Array;
     sampleRate: number;
     formants: WordWithFormants[];
+    id: string;
 }
 
 interface AnalyzedResultStore {
@@ -16,11 +18,13 @@ interface AnalyzedResultStore {
     addAnalyzedResult: (analyzedResult: AnalyzedResult) => void;
     savedResults: AnalyzedResult[];
     saveResult: (analyzedResult: AnalyzedResult) => void;
+    removeSavedResult: (analyzedResult: AnalyzedResult) => void;
+    removeAnalyzedResult: (analyzedResult: AnalyzedResult) => void;
 }
 
 const maxAnalyzedResults = 5;
 
-export const useAnalyzedResultStore = create<AnalyzedResultStore>(devtools((set, get) => (
+export const useAnalyzedResultStore = createHydrationSafeStore<AnalyzedResultStore>('analyzed-results', (set, get) => (
     {
         currentAnalyzedResult: null,
         setCurrentAnalyzedResult: (currentAnalyzedResult: AnalyzedResult) => set(state => ({...state, currentAnalyzedResult})),
@@ -43,12 +47,25 @@ export const useAnalyzedResultStore = create<AnalyzedResultStore>(devtools((set,
                 };
             }
         }),
+        removeSavedResult: (analyzedResult: AnalyzedResult) => set(state => {
+            const savedResults = state.savedResults.filter(it => it.id !== analyzedResult.id);
+            console.log("Removed!");
+            return {
+                ...state,
+                savedResults,
+            };
+        }),
+        removeAnalyzedResult: (analyzedResult: AnalyzedResult) => set(state => {
+            const analyzedResults = state.analyzedResults.filter(it => it.id !== analyzedResult.id);
+            return {
+                ...state,
+                analyzedResults,
+            };
+        }),
         saveResult: (analyzedResultEntry: AnalyzedResult) => set(state => {
             if (state.savedResults.includes(analyzedResultEntry)) {
-                return
+                return;
             }
-
-            let analyzedResults = state.analyzedResults.filter(it => it !== analyzedResultEntry);
 
             const savedResults = [...state.savedResults, analyzedResultEntry];
 
@@ -56,17 +73,15 @@ export const useAnalyzedResultStore = create<AnalyzedResultStore>(devtools((set,
                 const [_, ...slicedResults] = savedResults;
                 return {
                     ...state,
-                    analyzedResults,
                     savedResults: slicedResults
                 };
             } else {
                 // Return a new state object with the new (unsliced) array
                 return {
                     ...state,
-                    analyzedResults,
                     savedResults
                 };
             }
         })
     }
-)))
+));

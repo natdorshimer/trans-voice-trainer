@@ -1,6 +1,7 @@
-import {AnalyzedResult, useAnalyzedResultStore} from "@/app/stores/spectrogram/AnalyzedResultsStore";
-import {useState} from "react";
+import {AnalyzedResult, useAnalyzedResultStore} from "@/app/stores/AnalyzedResultsStore";
+import React, {useState} from "react";
 import {ScrollableWindow} from "@/app/ui/FormantAdviceWindow";
+import shallow from "zustand/shallow";
 
 // Fix the shorten function
 function shorten(text: string, maxLength: number = 3): string {
@@ -12,9 +13,49 @@ function shorten(text: string, maxLength: number = 3): string {
     return text; // Return the original text if it's 2 words or less
 }
 
+interface DeleteItemFromListButtonProps {
+    item: AnalyzedResult;
+    removeAnalyzedResult: (analyzedResult: AnalyzedResult) => void;
+}
+
+const XIcon = () =>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                         className="bi bi-x-lg" viewBox="0 0 16 16">
+    <path
+        d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+</svg>
+
+
+const DeleteItemFromListButton: React.FC<DeleteItemFromListButtonProps> = ({item, removeAnalyzedResult}) => {
+    const onClick = () => removeAnalyzedResult(item);
+    return <button className={'bg-zinc-700 hover:bg-red-500 rounded w-8 h-8 items-center flex justify-center'} onClick={onClick}>
+            <XIcon/>
+    </button>;
+}
+
 export const AnalyzedResultSelectionModal = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const { setCurrentAnalyzedResult, analyzedResults, currentAnalyzedResult, savedResults } = useAnalyzedResultStore();
+
+    const analyzedResultState = useAnalyzedResultStore(state => ({
+        setCurrentAnalyzedResult: state.setCurrentAnalyzedResult,
+        analyzedResults: state.analyzedResults,
+        currentAnalyzedResult: state.currentAnalyzedResult,
+        savedResults: state.savedResults,
+        removeSavedResult: state.removeSavedResult,
+        removeAnalyzedResult: state.removeAnalyzedResult,
+    }), shallow);
+
+    if (!analyzedResultState) return <></>;
+
+    const {
+        setCurrentAnalyzedResult,
+        analyzedResults,
+        currentAnalyzedResult,
+        savedResults,
+        removeSavedResult,
+        removeAnalyzedResult
+    } = analyzedResultState;
+
 
     // Separate results into favorites and history
     const favoriteItems = savedResults.map(item => ({
@@ -24,7 +65,6 @@ export const AnalyzedResultSelectionModal = () => {
 
     // Filter history to only include items not in favorites
     const historyItems = analyzedResults
-        .filter(item => !savedResults.includes(item))
         .map(item => ({
             result: item,
             description: `${item.formants.map(formant => formant.word).join(" ")}`,
@@ -72,18 +112,19 @@ export const AnalyzedResultSelectionModal = () => {
                         <h3 className="text-xl font-semibold mb-3 text-white text-center">Favorites</h3>
                         {favoriteItems.length > 0 ? (
                             <ul className="space-y-2">
-                                {favoriteItems.map((item, index) => (
-                                    <li
-                                        key={`fav-${index}`} // Unique key
-                                        className={`p-3 rounded-md cursor-pointer flex items-center justify-between ${item.result === currentAnalyzedResult ? 'bg-blue-600' : 'bg-zinc-700 hover:bg-zinc-600'} text-white transition-colors duration-150`}
-                                        onClick={() => handleSelectResult(item.result)}
-                                    >
-                                        {/* Shortened description */}
-                                        <span className="flex-1 mr-2 text-left">{shorten(item.description)}</span>
-                                        {/* Star icon */}
-                                        <span>⭐</span>
-                                    </li>
-                                ))}
+                                {favoriteItems.map((item, index) => {
+                                    return <div key={`fav-${item.result.id}`} className='fp-3 rounded-md cursor-pointer flex items-center gap-1'>
+                                        <DeleteItemFromListButton key={`fav-del-${item.result.id}`} item={item.result}
+                                                                  removeAnalyzedResult={removeSavedResult}/>
+                                        <li
+                                            key={`fav-${item.result.id}`} // Unique key
+                                            className={`p-3 rounded-md cursor-pointer flex flex-grow items-center justify-between ${item.result === currentAnalyzedResult ? 'bg-blue-600' : 'bg-zinc-700 hover:bg-zinc-600'} text-white transition-colors duration-150`}
+                                            onClick={() => handleSelectResult(item.result)}
+                                        >
+                                            <span className="flex-1 mr-2 text-left">{shorten(item.description)}</span>
+                                        </li>
+                                    </div>;
+                                })}
                             </ul>
                         ) : (
                             <p className="text-zinc-400 italic text-center">No favorited results yet.</p>
@@ -96,9 +137,13 @@ export const AnalyzedResultSelectionModal = () => {
                         <h3 className="text-xl font-semibold mb-3 text-white mt-6 md:mt-0 text-center">History</h3>
                         {historyItems.length > 0 ? (
                             <ul className="space-y-2">
-                                {historyItems.map((item, index) => (
+                                {historyItems.map((item) => {
+                                    console.log(item.result.id);
+                                    return <div key={`hist-${item.result.id}`} className='fp-3 rounded-md cursor-pointer flex items-center gap-1'>
+                                        <DeleteItemFromListButton key={`hist-del-${item.result.id}`} item={item.result}
+                                                                  removeAnalyzedResult={removeAnalyzedResult}/>
                                     <li
-                                        key={`hist-${index}`} // Unique key
+                                        key={`hist-${item.result.id}`} // Unique key
                                         className={`p-3 rounded-md cursor-pointer flex items-center justify-between ${item.result === currentAnalyzedResult ? 'bg-blue-600' : 'bg-zinc-700 hover:bg-zinc-600'} text-white transition-colors duration-150`}
                                         onClick={() => handleSelectResult(item.result)}
                                     >
@@ -107,7 +152,8 @@ export const AnalyzedResultSelectionModal = () => {
                                         {/* No star for history items */}
                                         <span></span> {/* Empty span to maintain layout alignment */}
                                     </li>
-                                ))}
+                                    </div>
+                                })}
                             </ul>
                         ) : (
                             <p className="text-zinc-400 italic text-center">No analysis history yet.</p>
