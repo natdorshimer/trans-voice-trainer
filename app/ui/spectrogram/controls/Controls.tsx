@@ -10,6 +10,8 @@ import {DisableHeatmapButton} from "@/app/ui/spectrogram/controls/DisableHeatmap
 import {DisableAxisButton} from "@/app/ui/spectrogram/controls/DisableAxisButton";
 import {PlayRecordingButton} from "@/app/ui/PlayRecordingButton";
 import {useAnalyzedResultStore} from "@/app/stores/spectrogram/AnalyzedResultsStore";
+import {SelectAnalyzedResult} from "@/app/ui/spectrogram/controls/SelectAnalyzedResult";
+import {SaveAnalyzedResult} from "@/app/ui/spectrogram/controls/SaveAnalyzedResult";
 
 
 export const Controls = () => {
@@ -19,16 +21,17 @@ export const Controls = () => {
         setIsExpanded(!isExpanded);
     };
 
-    const { analyzedResults } = useAnalyzedResultStore(state => ({
+    const { currentAnalyzedResult } = useAnalyzedResultStore(state => ({
         analyzedResults: state.analyzedResults,
         savedResults: state.savedResults,
+        currentAnalyzedResult: state.currentAnalyzedResult
     }));
 
-    const analyzedResult = analyzedResults.length > 0 ? analyzedResults[analyzedResults.length - 1] : null;
+    const analyzedResult = currentAnalyzedResult;
 
     return (
         <div className="md:px-2 gap-3 flex flex-col items-center">
-            <div className="w-full max-w-md flex flex-col">
+            <div className="w-full max-w-md flex flex-col mb-2">
                 <div className="flex items-center cursor-pointer mb-2" onClick={toggleExpand}>
                     {isExpanded ? <FaCaretUp className="mr-2"/> : <FaCaretDown className="mr-2"/>}
                     <ControlsLabel/>
@@ -37,19 +40,22 @@ export const Controls = () => {
 
                 <div className={"mt-2 ml-6"}>
                     <div className='flex flex-row gap-3 mb-2'>
-                    <ToggleUserMicrophoneButton/>
-                    {analyzedResult ? <PlayRecordingButton analyzedResult={analyzedResult}/> : null}
+                        <ToggleUserMicrophoneButton/>
+                        {analyzedResult ? <PlayRecordingButton analyzedResult={analyzedResult}/> : null}
                     </div>
                     {isExpanded && (
+                    <div>
+                        <SelectAnalyzedResult/>
+                        <SaveAnalyzedResult/>
                         <div>
                             <DisableHeatmapButton/>
-                            {/*<DisableAxisButton/>*/}
                             <MaxValueSlider/>
                             <HeatmapDisplayFrequencyControl/>
                             {navigator.userAgent.includes("Firefox") ? undefined : <SampleRateSelectionField/>}
-                            {/*<FftSizeSelectionField/>*/}
                         </div>
+                    </div>
                     )}
+
                 </div>
             </div>
         </div>

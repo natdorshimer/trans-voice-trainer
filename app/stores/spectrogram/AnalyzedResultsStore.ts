@@ -10,6 +10,8 @@ export interface AnalyzedResult {
 }
 
 interface AnalyzedResultStore {
+    currentAnalyzedResult: AnalyzedResult | null;
+    setCurrentAnalyzedResult: (currentAnalyzedResult: AnalyzedResult) => void;
     analyzedResults: AnalyzedResult[];
     addAnalyzedResult: (analyzedResult: AnalyzedResult) => void;
     savedResults: AnalyzedResult[];
@@ -20,6 +22,8 @@ const maxAnalyzedResults = 5;
 
 export const useAnalyzedResultStore = create<AnalyzedResultStore>(devtools((set, get) => (
     {
+        currentAnalyzedResult: null,
+        setCurrentAnalyzedResult: (currentAnalyzedResult: AnalyzedResult) => set(state => ({...state, currentAnalyzedResult})),
         analyzedResults: [],
         savedResults: [],
         addAnalyzedResult: (analyzedResultEntry: AnalyzedResult) => set(state => {

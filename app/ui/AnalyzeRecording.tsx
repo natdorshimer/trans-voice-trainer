@@ -79,7 +79,7 @@ const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, reco
     const [results, setResult] = useState<WordWithFormants[] | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const {analyzedResults, addAnalyzedResult} = useAnalyzedResultStore();
+    const {currentAnalyzedResult, analyzedResults, addAnalyzedResult, setCurrentAnalyzedResult} = useAnalyzedResultStore();
 
     useEffect(() => {
         const analyze = async () => {
@@ -90,11 +90,13 @@ const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, reco
                     const preResampledSamples = mergeBuffers(recordedChunks!);
                     const allFormants = await analyzer!.computeAllFormants(preResampledSamples);
 
-                    addAnalyzedResult({
+                    let analyzedResult = {
                         samples: preResampledSamples,
                         sampleRate: analyzer!.getSourceSampleRate(),
                         formants: allFormants
-                    })
+                    };
+                    setCurrentAnalyzedResult(analyzedResult);
+                    addAnalyzedResult(analyzedResult)
 
                     setResult(allFormants);
                 }
@@ -108,10 +110,9 @@ const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, reco
         analyze();
     }, [analyzer, shouldAnalyze]); // Re-run analysis if recordedChunks or sampleRate change
 
-        const analyzedResult = analyzedResults.length > 0 ? analyzedResults[analyzedResults.length - 1] : null;
         return (
             <div>
-                <FormantAnalysis loading={loading} analyzedResult={analyzedResult}/>
+                <FormantAnalysis loading={loading} analyzedResult={currentAnalyzedResult}/>
             </div>
         );
 };
