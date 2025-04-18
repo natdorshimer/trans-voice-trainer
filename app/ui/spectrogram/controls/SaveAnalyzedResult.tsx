@@ -9,6 +9,6 @@ export const SaveAnalyzedResult = () => {
         }
     }
     return <StandardSpectrogramButton onClick={onClick}>
-        Save Result
+        Favorite
     </StandardSpectrogramButton>
 }

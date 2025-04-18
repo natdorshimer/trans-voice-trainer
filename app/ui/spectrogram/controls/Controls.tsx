@@ -44,9 +44,10 @@ export const Controls = () => {
                         {analyzedResult ? <PlayRecordingButton analyzedResult={analyzedResult}/> : null}
                     </div>
                     {isExpanded && (
-                    <div >
-                        <AnalyzedResultSelectionModal/>
-                        <SaveAnalyzedResult/>
+                    <div>
+
+                        <div>
+                        </div>
                         <div className = "mt-2">
                             <DisableHeatmapButton/>
                             <MaxValueSlider/>
