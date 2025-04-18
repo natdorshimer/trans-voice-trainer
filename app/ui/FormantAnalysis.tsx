@@ -187,7 +187,7 @@ export const isInRange = (
     value: number,
     formant: FormantKeys,
     averageFormants: GenderedFormants | undefined,
-    comparisonType: "feminine" | "masculine" | undefined
+    comparisonType: "feminine" | "masculine" | null
 ) => {
     const masculine_value = averageFormants?.masculine?.[formant];
     const feminine_value = averageFormants?.feminine?.[formant];

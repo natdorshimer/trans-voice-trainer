@@ -5,10 +5,10 @@ import {EssentiaWASM} from "https://cdn.jsdelivr.net/npm/essentia.js@0.1.3/dist/
 // @ts-ignore
 import Essentia from "https://cdn.jsdelivr.net/npm/essentia.js@0.1.3/dist/essentia.js-core.es.js";
 
-// @ts-ignore
 import {
     ConverterType,
     create
+    // @ts-ignore
 } from "https://cdn.jsdelivr.net/npm/@alexanderolsen/libsamplerate-js/dist/libsamplerate.worklet.js";
 
 import {computeFormantsBase} from "@/app/lib/DSP";
