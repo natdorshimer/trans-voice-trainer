@@ -8,6 +8,7 @@ import {CircularBuffer} from "@/app/lib/CircularBuffer";
 import {Resampler} from "@/app/lib/Resampler";
 import {useAnalyzedResultStore} from "@/app/stores/spectrogram/AnalyzedResultsStore";
 import {mergeBuffers} from "@/app/lib/microphone/EnableUserMicrophone";
+import shallow from "zustand/shallow";
 
 export const useAudioAnalyzer = (audioCtx: AudioContext | undefined) => {
     const [audioAnalyzer, setAudioAnalyzer] = useState<AudioAnalyzer | null>(null);
@@ -78,13 +79,21 @@ export interface AnalyzeRecordingProps {
 const AnalyzeRecordingClient: React.FC<AnalyzeRecordingProps> = ({analyzer, recordedChunks, shouldAnalyze}) => {
     const [loading, setLoading] = useState(false);
     const [isError, setError] = useState<string | null>(null);
-    const {currentAnalyzedResult, addAnalyzedResult, setCurrentAnalyzedResult} = useAnalyzedResultStore();
+    const analyzedResultState= useAnalyzedResultStore(state => ({
+        currentAnalyzedResult: state.currentAnalyzedResult,
+        addAnalyzedResult: state.addAnalyzedResult,
+        setCurrentAnalyzedResult: state.setCurrentAnalyzedResult
+    }), shallow);
+
+    const currentAnalyzedResult = analyzedResultState?.currentAnalyzedResult || null;
 
     useEffect(() => {
         const analyze = async () => {
             setError(null);
             try {
-                if (shouldAnalyze) {
+                if (shouldAnalyze && analyzedResultState) {
+                    const {addAnalyzedResult, setCurrentAnalyzedResult} = analyzedResultState;
+
                     setLoading(true);
                     const preResampledSamples = mergeBuffers(recordedChunks!);
                     const allFormants = await analyzer!.computeAllFormants(preResampledSamples);

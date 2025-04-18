@@ -1,6 +1,7 @@
 import {AnalyzedResult, useAnalyzedResultStore} from "@/app/stores/spectrogram/AnalyzedResultsStore";
 import {useState} from "react";
 import {ScrollableWindow} from "@/app/ui/FormantAdviceWindow";
+import shallow from "zustand/shallow";
 
 // Fix the shorten function
 function shorten(text: string, maxLength: number = 3): string {
@@ -14,7 +15,17 @@ function shorten(text: string, maxLength: number = 3): string {
 
 export const AnalyzedResultSelectionModal = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const { setCurrentAnalyzedResult, analyzedResults, currentAnalyzedResult, savedResults } = useAnalyzedResultStore();
+
+    const analyzedResultState = useAnalyzedResultStore(state => ({
+        setCurrentAnalyzedResult: state.setCurrentAnalyzedResult,
+        analyzedResults: state.analyzedResults,
+        currentAnalyzedResult: state.currentAnalyzedResult,
+        savedResults: state.savedResults,
+    }), shallow);
+
+    if (!analyzedResultState) return <></>;
+
+    const { setCurrentAnalyzedResult, analyzedResults, currentAnalyzedResult, savedResults } = analyzedResultState;
 
     // Separate results into favorites and history
     const favoriteItems = savedResults.map(item => ({

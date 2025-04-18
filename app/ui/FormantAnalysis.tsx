@@ -362,7 +362,6 @@ const FormantAnalysis = ({analyzedResult, loading}: { analyzedResult: AnalyzedRe
 
     const onBoxClick = (wordWithFormants: WordWithFormants) => {
         setExpandedWord(wordWithFormants);
-        console.log("Selected word ", wordWithFormants.word);
         const gender = comparisonType || 'feminine';
         if (wordDatabase) {
             const foundWord = wordDatabase[wordWithFormants.word];

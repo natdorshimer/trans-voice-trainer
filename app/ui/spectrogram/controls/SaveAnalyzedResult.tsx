@@ -1,8 +1,18 @@
 import {StandardSpectrogramButton} from "@/app/ui/spectrogram/controls/StartStopButton";
 import {useAnalyzedResultStore} from "@/app/stores/spectrogram/AnalyzedResultsStore";
+import shallow from "zustand/shallow";
 
 export const SaveAnalyzedResult = () => {
-    const {currentAnalyzedResult, saveResult} = useAnalyzedResultStore();
+     const analyzedResultState = useAnalyzedResultStore(state => ({
+        currentAnalyzedResult: state.currentAnalyzedResult,
+        saveResult: state.saveResult
+    }), shallow);
+
+     if (!analyzedResultState) {
+         return <></>;
+     }
+
+    const { currentAnalyzedResult, saveResult } = analyzedResultState;
     if (!currentAnalyzedResult) {
         return <></>;
     }

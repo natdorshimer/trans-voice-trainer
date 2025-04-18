@@ -1,6 +1,7 @@
+'use client';
+
 import {WordWithFormants} from "@/app/ui/FormantAnalysis";
-import create from "zustand";
-import {devtools} from "zustand/middleware";
+import {createHydrationSafeStore} from "@/app/stores/spectrogram/use-store";
 
 
 export interface AnalyzedResult {
@@ -20,7 +21,7 @@ interface AnalyzedResultStore {
 
 const maxAnalyzedResults = 5;
 
-export const useAnalyzedResultStore = create<AnalyzedResultStore>(devtools((set, get) => (
+export const useAnalyzedResultStore = createHydrationSafeStore<AnalyzedResultStore>('analyzed-results', (set, get) => (
     {
         currentAnalyzedResult: null,
         setCurrentAnalyzedResult: (currentAnalyzedResult: AnalyzedResult) => set(state => ({...state, currentAnalyzedResult})),
@@ -69,4 +70,4 @@ export const useAnalyzedResultStore = create<AnalyzedResultStore>(devtools((set,
             }
         })
     }
-)))
+));

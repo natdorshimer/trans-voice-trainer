@@ -10,7 +10,7 @@ const DownloadIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" he
 </svg>;
 
 export const DownloadResult = () => {
-    const { currentAnalyzedResult } = useAnalyzedResultStore();
+    const currentAnalyzedResult = useAnalyzedResultStore(state => state.currentAnalyzedResult);
     if (!currentAnalyzedResult) {
         return <></>
     }

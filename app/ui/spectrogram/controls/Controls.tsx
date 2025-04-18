@@ -16,13 +16,7 @@ export const Controls = () => {
         setIsExpanded(!isExpanded);
     };
 
-    const { currentAnalyzedResult } = useAnalyzedResultStore(state => ({
-        analyzedResults: state.analyzedResults,
-        savedResults: state.savedResults,
-        currentAnalyzedResult: state.currentAnalyzedResult
-    }));
-
-    const analyzedResult = currentAnalyzedResult;
+    const analyzedResult = useAnalyzedResultStore(state => state.currentAnalyzedResult);
 
     return (
         <div className="md:px-2 gap-3 flex flex-col items-center">
