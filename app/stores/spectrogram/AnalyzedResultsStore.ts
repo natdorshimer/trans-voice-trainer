@@ -67,6 +67,6 @@ export const useAnalyzedResultStore = create<AnalyzedResultStore>(devtools((set,
                     savedResults
                 };
             }
-        }),
+        })
     }
 )))

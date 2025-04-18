@@ -11,6 +11,9 @@ const DownloadIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" he
 
 export const DownloadResult = () => {
     const { currentAnalyzedResult } = useAnalyzedResultStore();
+    if (!currentAnalyzedResult) {
+        return <></>
+    }
     const onClick = () => {
         if (currentAnalyzedResult) {
             let words = currentAnalyzedResult.formants.map(it => it.word);
