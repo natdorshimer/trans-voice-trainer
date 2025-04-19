@@ -1,8 +1,8 @@
-import { StandardSpectrogramButton } from "@/app/ui/spectrogram/controls/StartStopButton";
-import { useAnalyzedResultStore } from "@/app/stores/AnalyzedResultsStore";
-import { Directory, Filesystem } from "@capacitor/filesystem";
-import { Capacitor } from "@capacitor/core";
-import { useState } from 'react';
+import {StandardSpectrogramButton} from "@/app/ui/spectrogram/controls/StartStopButton";
+import {AnalyzedResult, useAnalyzedResultStore} from "@/app/stores/AnalyzedResultsStore";
+import {Directory, Filesystem} from "@capacitor/filesystem";
+import {Capacitor} from "@capacitor/core";
+import {useState} from 'react';
 import {Modal} from "@/app/ui/FormantAdviceWindow";
 
 
@@ -13,6 +13,16 @@ const DownloadIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" he
     <path
         d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
 </svg>;
+
+function createFileNameFromResult(currentAnalyzedResult: AnalyzedResult) {
+    let words = currentAnalyzedResult.formants.map(it => it.word);
+    if (words.length > 5) {
+        words = words.slice(0, 5);
+    }
+
+    // : is not valid on Android
+    return words.join("_") + new Date().toISOString().replaceAll(":", ".") + '.wav';
+}
 
 export const DownloadResult = () => {
     const currentAnalyzedResult = useAnalyzedResultStore(state => state.currentAnalyzedResult);
@@ -27,22 +37,14 @@ export const DownloadResult = () => {
 
     const handleDownloadError = (error: any) => {
         console.error("Error while downloading voice file", error);
-        
     };
 
     const onClick = () => {
         if (currentAnalyzedResult) {
-            let words = currentAnalyzedResult.formants.map(it => it.word);
-            if (words.length > 5) {
-                words = words.slice(0, 5);
-            }
-
-            const fileName = words.join("_") + new Date().toISOString().replaceAll(":", ".") + '.wav';
-
             downloadWav(
                 currentAnalyzedResult.samples,
                 currentAnalyzedResult.sampleRate,
-                fileName,
+                createFileNameFromResult(currentAnalyzedResult),
                 handleDownloadSuccess,
                 handleDownloadError
             );
@@ -52,7 +54,6 @@ export const DownloadResult = () => {
     const closeModal = () => {
         setShowModal(false);
     };
-
 
     if (!currentAnalyzedResult) {
         return <></>
@@ -150,12 +151,12 @@ function downloadWav(
 ): void {
     const blob = createWavBlob(sampleRate, samples);
 
-    if (Capacitor.getPlatform() !== 'web') {
-        downloadMobile(filename, blob, onMobileSuccess, onMobileError);
+    if (Capacitor.getPlatform() === 'web') {
+        downloadWeb(blob, filename);
         return;
     }
 
-    downloadWeb(blob, filename);
+    downloadMobile(filename, blob, onMobileSuccess, onMobileError);
 }
 
 
