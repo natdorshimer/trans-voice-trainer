@@ -5,9 +5,11 @@ let cachedModel: Model | undefined = undefined;
 
 const loadModel = async (): Promise<Model> => {
     try {
+
         //hack
-        const basePath = process.env.NODE_ENV === 'production' ? '/trans-voice-trainer/' : '';
-        const model = await createModel(`${basePath}/models/model-new.tar.gz`);
+        const basePath = process.env.NODE_ENV === 'production' ? process.env['TRANS_VOICE_PATH'] || '': '';
+        const basePathWithSlash = basePath === '' ? '' : basePath + "/";
+        const model = await createModel(basePathWithSlash);
 
         cachedModel = model;
         return model;
