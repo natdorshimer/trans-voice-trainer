@@ -3,7 +3,7 @@ import { useAnalyzedResultStore } from "@/app/stores/AnalyzedResultsStore";
 import { Directory, Filesystem } from "@capacitor/filesystem";
 import { Capacitor } from "@capacitor/core";
 import { useState } from 'react';
-import {ScrollableWindow} from "@/app/ui/FormantAdviceWindow";
+import {Modal} from "@/app/ui/FormantAdviceWindow";
 
 
 const DownloadIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-download"
@@ -39,7 +39,6 @@ export const DownloadResult = () => {
 
             const fileName = words.join("_") + new Date().toISOString().replaceAll(":", ".") + '.wav';
 
-            
             downloadWav(
                 currentAnalyzedResult.samples,
                 currentAnalyzedResult.sampleRate,
@@ -65,9 +64,9 @@ export const DownloadResult = () => {
                 <DownloadIcon/>
             </StandardSpectrogramButton>
             {showModal && (
-                <ScrollableWindow isOpen={showModal} onClose={closeModal}>
+                <Modal isOpen={showModal} onClose={closeModal}>
                     <h3>Saved Recording</h3>
-                </ScrollableWindow>
+                </Modal>
             )}
         </>
     );
