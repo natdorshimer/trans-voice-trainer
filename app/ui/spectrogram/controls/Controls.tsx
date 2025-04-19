@@ -20,25 +20,24 @@ export const Controls = () => {
 
     return (
         <div className="md:px-2 gap-3 flex flex-col items-center">
-            <div className="w-full max-w-md flex flex-col mb-2">
-                <div className="flex items-center cursor-pointer mb-2" onClick={toggleExpand}>
+            <div className="w-full max-w-md flex flex-col mb-2 items-center">
+                <div className="flex items-center cursor-pointer mb-2 md:justify-start md:" onClick={toggleExpand}>
                     {isExpanded ? <FaCaretUp className="mr-2"/> : <FaCaretDown className="mr-2"/>}
                     <ControlsLabel/>
-                    {/* Removed the empty div */}
                 </div>
 
                 <div className={"mt-2 ml-6"}>
-                    <div className='flex flex-row gap-3 mb-2'>
+                    <div className='flex flex-row gap-3 mb-2 items-center justify-center'>
                         <ToggleUserMicrophoneButton/>
                         {analyzedResult ? <PlayRecordingButton analyzedResult={analyzedResult}/> : null}
                     </div>
                     {isExpanded && (
                     <div>
 
-                        <div>
+                        <div className={'flex justify-center'}>
+                            <DisableHeatmapButton/>
                         </div>
                         <div className = "mt-2">
-                            <DisableHeatmapButton/>
                             <MaxValueSlider/>
                             <HeatmapDisplayFrequencyControl/>
                             {navigator.userAgent.includes("Firefox") ? undefined : <SampleRateSelectionField/>}
@@ -54,10 +53,7 @@ export const Controls = () => {
 
 const ControlsLabel = () => {
     return <>
-        {/*<div className="ml-2">*/}
-
-        {/*</div>*/}
-        <p className="block text-3xl font-bold mt-5 self-start">
+        <p className="text-3xl font-bold mt-5">
             Controls
         </p>
     </>;

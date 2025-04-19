@@ -40,7 +40,7 @@ export const MaxValueSlider = () => {
     }
 
     return (
-        <div className="flex-col space-y-0 items-center max-w-64 mb-4 pt-2">
+        <div className="flex-col space-y-0 items-center max-w-52 mb-4 pt-2">
             <label className="text-sm font-medium text-gray-300 whitespace-nowrap">
                 Alpha Scale
             </label>
