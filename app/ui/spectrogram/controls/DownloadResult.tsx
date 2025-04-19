@@ -1,5 +1,7 @@
 import {StandardSpectrogramButton} from "@/app/ui/spectrogram/controls/StartStopButton";
 import {useAnalyzedResultStore} from "@/app/stores/AnalyzedResultsStore";
+import {Directory, Encoding, Filesystem} from "@capacitor/filesystem";
+import {Capacitor} from "@capacitor/core";
 
 const DownloadIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-download"
                  viewBox="0 0 16 16">
@@ -29,7 +31,7 @@ export const DownloadResult = () => {
     </StandardSpectrogramButton>
 }
 
-function downloadWav(samples: Float32Array, sampleRate: number, filename: string = 'audio.wav'): void {
+function createWavBlob(sampleRate: number, samples: Float32Array<ArrayBufferLike>) {
     const numChannels = 1;
     const bytesPerSample = 2; // 16-bit PCM
     const bitsPerSample = 16;
@@ -42,7 +44,7 @@ function downloadWav(samples: Float32Array, sampleRate: number, filename: string
     const buffer = new ArrayBuffer(44 + dataSize);
     const view = new DataView(buffer);
 
-    // RIFF chunk
+    // RIFF
     writeString(view, 0, 'RIFF');
     view.setUint32(4, fileSize, true);
     writeString(view, 8, 'WAVE');
@@ -68,8 +70,31 @@ function downloadWav(samples: Float32Array, sampleRate: number, filename: string
         view.setInt16(44 + i * bytesPerSample, int16Sample, true);
     }
 
-    const blob = new Blob([buffer], { type: 'audio/wav' });
+    return new Blob([buffer], {type: 'audio/wav'});
+}
 
+function downloadMobile(filename: string, blob: Blob) {
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+        const base64String = reader.result as string;
+        const base64Content = base64String.split(',')[1];
+
+        try {
+            const result = await Filesystem.writeFile({
+                path: `trans-voice-trainer/${filename}`, // Double-check this path and the 'trans-voice-trainer' subfolder existence/necessity
+                data: base64Content, // Pass the Base64 string
+                directory: Directory.Documents,
+                recursive: true
+            });
+            console.log(`File written, ${result.uri}`);
+        } catch (e) {
+            console.error("Error while downloading voice file", e);
+        }
+    };
+    reader.readAsDataURL(blob); // Read the blob as a Data URL (includes Base64)
+}
+
+function downloadWeb(blob: Blob, filename: string) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.style.display = 'none';
@@ -82,6 +107,20 @@ function downloadWav(samples: Float32Array, sampleRate: number, filename: string
         URL.revokeObjectURL(url);
         a.remove();
     }, 100);
+}
+
+function downloadWav(samples: Float32Array, sampleRate: number, filename: string = 'audio.wav'): void {
+    const blob = createWavBlob(sampleRate, samples);
+    console.log("Trying to download file");
+
+    if (Capacitor.getPlatform() !== 'web') {
+        console.log("Attempting to download mobile");
+        downloadMobile(filename, blob);
+        return;
+    }
+
+    console.log("Attempting to download web");
+    downloadWeb(blob, filename);
 }
 
 function writeString(view: DataView, offset: number, str: string): void {

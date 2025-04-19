@@ -5,7 +5,7 @@
     "build:worklet": "esbuild app/lib/audio-worklet/*.ts --bundle --outfile=public/audio/recorder-processor.js --format=esm --platform=browser --minify",
     "pre-build": "npm run build:worklet && npm run copy-wasm",
     "build": "npm run pre-build && next build",
-    "buildMobile": "export TRANS_VOICE_PATH=''; npm run build",
+    "buildMobile": "export CAPACITOR_ENABLED='true'; export TRANS_VOICE_PATH=''; npm run build; export CAPACITOR_ENABLED='false';",
     "dev": "npm run pre-build && next dev --turbopack",
     "start": "npm run build && next start",
     "copy-wasm": "node scripts/copy-wasm.js",
@@ -40,6 +40,7 @@
     "zustand": "^3.6.0"
   },
   "devDependencies": {
+    "@capacitor/filesystem": "^7.0.1",
     "@types/audioworklet": "^0.0.72",
     "@types/node": "22.10.7",
     "@types/react": "19.0.7",

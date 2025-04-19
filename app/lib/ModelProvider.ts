@@ -9,7 +9,7 @@ const loadModel = async (): Promise<Model> => {
         //hack
         const basePath = process.env.NODE_ENV === 'production' ? process.env['TRANS_VOICE_PATH'] || '': '';
         const basePathWithSlash = basePath === '' ? '' : basePath + "/";
-        const model = await createModel(basePathWithSlash);
+        const model = await createModel(`${basePathWithSlash}models/modelNew.tar`);
 
         cachedModel = model;
         return model;

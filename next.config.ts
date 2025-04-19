@@ -1,6 +1,8 @@
 import type { NextConfig } from 'next';
 
-const prodPath = process.env['TRANS_VOICE_PATH'] || '';
+const capacitorEnabled = process.env['CAPACITOR_ENABLED'] === 'true';
+const prodPath = capacitorEnabled ? '' : process.env['TRANS_VOICE_PATH'] || '';
+
 const isProd = process.env.NODE_ENV === 'production';
 
 const nextConfig: NextConfig = {

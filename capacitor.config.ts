@@ -5,11 +5,12 @@ const config: CapacitorConfig = {
   appName: 'Trans Voice Trainer',
   webDir: 'out',
   android: {
-    allowMixedContent: true
+    allowMixedContent: true,
   },
   server: {
     cleartext: true,
     hostname: "localhost",
+    androidScheme: "https",        // <— allow https://localhost on Android
   }
 };
 
