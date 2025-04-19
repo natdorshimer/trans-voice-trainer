@@ -74,7 +74,7 @@ These instructions are for developers who want to contribute to, modify, or run 
 
 2.  Run the build command:
     ```bash
-    pnpm run build
+    pnpm run build:web
     ```
     This will create a production-ready build in the `out` directory. You can then deploy the contents of this directory to any static web host.
 
