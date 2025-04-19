@@ -65,12 +65,12 @@ These instructions are for developers who want to contribute to, modify, or run 
 ### Building for Production
 
 1.  **Configure Base Path (If Necessary):**
-    The build process may require setting the `TRANS_VOICE_PATH` environment variable. This tells the application the base URL path where it will be hosted.
+    The build process may require setting the `NEXT_PUBLIC_TRANS_VOICE_PATH` environment variable. This tells the application the base URL path where it will be hosted.
     * For GitHub Pages deploying to `https://username.github.io/repo-name/`, the path would likely be `/repo-name`.
     * For deploying at the root of a domain, it might be `/` or an empty string `""`.
     * Set it in your shell before building (syntax varies by OS):
-        * Linux/macOS: `export TRANS_VOICE_PATH="/your-base-path"`
-        * Windows (PowerShell): `$env:TRANS_VOICE_PATH="/your-base-path"`
+        * Linux/macOS: `export NEXT_PUBLIC_TRANS_VOICE_PATH="/your-base-path"`
+        * Windows (PowerShell): `$env:NEXT_PUBLIC_TRANS_VOICE_PATH="/your-base-path"`
 
 2.  Run the build command:
     ```bash
