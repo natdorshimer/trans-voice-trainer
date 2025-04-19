@@ -3,14 +3,14 @@ import {HelperTextExpanded} from "@/app/ui/FormantAnalysis";
 import clsx from "clsx";
 import {ButtonProps} from "@/app/ui/spectrogram/controls/StartStopButton";
 
-interface WindowProps {
+interface ModalProps {
     onClose: () => void;
     children: React.ReactNode;
     isOpen?: boolean;
     header?: string;
 }
 
-export const ScrollableWindow: React.FC<WindowProps> = ({onClose, children, header, isOpen}) => {
+export const Modal: React.FC<ModalProps> = ({onClose, children, header, isOpen}) => {
     const windowRef = useRef<HTMLDivElement>(null);
 
     const handleClickOutside = useCallback((event: MouseEvent) => {
@@ -73,9 +73,9 @@ export const AdvicePanel = () => {
                     setFormant={setFormant}
                 />)
         }
-        {formant ? <ScrollableWindow header={`${formant} Tips`} onClose={onWindowClose}>
+        {formant ? <Modal header={`${formant} Tips`} onClose={onWindowClose}>
             <HelperTextExpanded formant={formant}/>
-    </ScrollableWindow> : null
+    </Modal> : null
         }
     </div>
 }
@@ -100,7 +100,7 @@ export const HelperButton =() => {
 
     return <>
         <StandardButton className='sm:w-16 w-16' onClick={() => setOpen(true)}>?</StandardButton>
-        {isOpen ? <ScrollableWindow header='How to Use' onClose={() => setOpen(false)}>
+        {isOpen ? <Modal header='How to Use' onClose={() => setOpen(false)}>
             <p className={'text-left'}>
                 Trans Voice Trainer helps you train the <b>formants</b> of your voice. You can think of your voice as a bunch of different frequencies layered on top of each other. The <b>formants</b> are the frequencies that are most prominent, or strong, in your voice. Masculine voices typically have lower formants than feminine formants.
                 <br/><br/>
@@ -111,6 +111,6 @@ export const HelperButton =() => {
                 <li><b>F2</b> is controlled by the mouth cavity size and lip shape</li>
                 <li><b>F3</b> is controlled by lip shape</li>
             </p>
-        </ScrollableWindow> : <></>}
+        </Modal> : <></>}
     </>
 }

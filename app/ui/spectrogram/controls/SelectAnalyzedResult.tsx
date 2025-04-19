@@ -1,6 +1,6 @@
 import {AnalyzedResult, useAnalyzedResultStore} from "@/app/stores/AnalyzedResultsStore";
 import React, {useState} from "react";
-import {ScrollableWindow} from "@/app/ui/FormantAdviceWindow";
+import {Modal} from "@/app/ui/FormantAdviceWindow";
 import shallow from "zustand/shallow";
 
 // Fix the shorten function
@@ -101,7 +101,7 @@ export const AnalyzedResultSelectionModal = () => {
             </button>
 
             {/* Using the local Modal component */}
-            <ScrollableWindow isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <h2 className="text-2xl font-bold mb-4 text-white text-center">Analysis Results</h2>
 
                 {/* Responsive layout for favorites and history lists */}
@@ -160,7 +160,7 @@ export const AnalyzedResultSelectionModal = () => {
                         )}
                     </div>
                 </div>
-            </ScrollableWindow>
+            </Modal>
         </div>
     );
 };
