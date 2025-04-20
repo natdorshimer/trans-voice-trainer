@@ -4,17 +4,35 @@ import clsx from "clsx";
 import {ButtonProps} from "@/app/ui/spectrogram/controls/StartStopButton";
 
 interface ModalProps {
+    isOpen?: boolean;
     onClose: () => void;
     children: React.ReactNode;
-    isOpen?: boolean;
     header?: string;
 }
 
-export const Modal: React.FC<ModalProps> = ({onClose, children, header, isOpen}) => {
-    const windowRef = useRef<HTMLDivElement>(null);
+export const Modal: React.FC<ModalProps> = (props) => {
+    const isOpen = props.isOpen !== undefined ? props.isOpen : true;
+    const { onClose, children, header } = props
+    const modalContentRef = useRef<HTMLDivElement>(null);
+    const backdropRef = useRef<HTMLDivElement>(null);
 
-    const handleClickOutside = useCallback((event: MouseEvent) => {
-        if (windowRef.current && !windowRef.current.contains(event.target as Node)) {
+    const [showContent, setShowContent] = useState(false);
+
+    // Transition timeout on open
+    useEffect(() => {
+        if (isOpen) {
+            const timer = setTimeout(() => {
+                setShowContent(true);
+            }, 10);
+
+            return () => clearTimeout(timer);
+        } else {
+            setShowContent(false);
+        }
+    }, [isOpen]);
+
+    const handleClickBackdrop = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+        if (event.target === backdropRef.current) {
             onClose();
         }
     }, [onClose]);
@@ -26,30 +44,63 @@ export const Modal: React.FC<ModalProps> = ({onClose, children, header, isOpen})
     }, [onClose]);
 
     useEffect(() => {
-        document.addEventListener('mousedown', handleClickOutside);
-        document.addEventListener('keydown', handleEscapeKey);
+        if (isOpen) {
+            document.addEventListener('keydown', handleEscapeKey);
+        } else {
+            document.removeEventListener('keydown', handleEscapeKey);
+        }
 
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
             document.removeEventListener('keydown', handleEscapeKey);
         };
-    }, [handleClickOutside, handleEscapeKey]);
+    }, [isOpen, handleEscapeKey]);
 
-    if (isOpen !== undefined && !isOpen) {
-        return <></>;
+    if (!isOpen) {
+        return null;
     }
 
-    return <div ref={windowRef} className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-900 text-white p-6 rounded-md shadow-lg z-10 text-center flex flex-col max-w-lg w-full">
-        {header ? <h2 className="text-xl font-semibold mb-4 flex-shrink-0">{header}</h2> : ''}
-        <div className="mb-4 overflow-y-auto max-h-[60vh]">
-            {children}
+    return (
+        // Backdrop - apply transition classes directly
+        <div
+            ref={backdropRef}
+            onClick={handleClickBackdrop}
+            aria-hidden="true"
+            className={`
+                fixed inset-0 z-40 bg-black/50
+                transition-opacity duration-300 ease-out
+                ${showContent ? 'opacity-100' : 'opacity-0'}
+            `}
+        >
+            {/* Modal Content - apply transition classes directly */}
+            <div
+                ref={modalContentRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby={header ? "modal-header" : undefined}
+                className={`
+                    fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+                    bg-zinc-900 text-white p-6 rounded-md shadow-lg z-50
+                    text-center flex flex-col max-w-lg w-full
+                    transition-all duration-300 ease-out
+                    ${showContent ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
+                `}
+            >
+                {header && (
+                    <h2 id="modal-header" className="text-xl font-semibold mb-4 flex-shrink-0">{header}</h2>
+                )}
+                <div className="mb-4 overflow-y-auto max-h-[60vh]">
+                    {children}
+                </div>
+                <button
+                    onClick={onClose}
+                    className="bg-zinc-600 hover:bg-zinc-500 text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:ring-blue-500 mt-2"
+                >
+                    Close
+                </button>
+            </div>
         </div>
-        <button onClick={onClose}
-                className="bg-zinc-600 hover:bg-zinc-500 text-white py-2 px-4 rounded-md focus:outline-none mt-2">
-            Close
-        </button>
-    </div>
-}
+    );
+};
 
 
 interface FormantAdviceButton {
@@ -73,10 +124,10 @@ export const AdvicePanel = () => {
                     setFormant={setFormant}
                 />)
         }
-        {formant ? <Modal header={`${formant} Tips`} onClose={onWindowClose}>
+        <Modal isOpen={formant !== null} header={`${formant} Tips`} onClose={onWindowClose}>
             <HelperTextExpanded formant={formant}/>
-    </Modal> : null
-        }
+        </Modal>
+
     </div>
 }
 
@@ -100,7 +151,7 @@ export const HelperButton =() => {
 
     return <>
         <StandardButton className='sm:w-16 w-16' onClick={() => setOpen(true)}>?</StandardButton>
-        {isOpen ? <Modal header='How to Use' onClose={() => setOpen(false)}>
+        <Modal isOpen={isOpen} header='How to Use' onClose={() => setOpen(false)}>
             <p className={'text-left'}>
                 Trans Voice Trainer helps you train the <b>formants</b> of your voice. You can think of your voice as a bunch of different frequencies layered on top of each other. The <b>formants</b> are the frequencies that are most prominent, or strong, in your voice. Masculine voices typically have lower formants than feminine formants.
                 <br/><br/>
@@ -111,6 +162,6 @@ export const HelperButton =() => {
                 <li><b>F2</b> is controlled by the mouth cavity size and lip shape</li>
                 <li><b>F3</b> is controlled by lip shape</li>
             </p>
-        </Modal> : <></>}
-    </>
+        </Modal>
+        </>;
 }

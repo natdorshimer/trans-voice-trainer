@@ -86,7 +86,8 @@ const HelperTextExtra = ({formant} : {formant: string}) => {
     return <></>
 }
 
-export const HelperTextExpanded = ({formant}:{formant: string}) => {
+export const HelperTextExpanded = ({formant}:{formant: string | null}) => {
+    if (!formant) return <></>;
     return <div>
         <HelperText formant={formant}/>
         <HelperTextExtra formant={formant}/>
