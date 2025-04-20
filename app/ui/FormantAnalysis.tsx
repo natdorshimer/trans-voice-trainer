@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import wd from '@/public/formant_data.json';
 import {FormantData} from "@/app/ui/spectrogram/canvas/UpdatingHeatmap";
 import {A} from "@/app/ui/A";
-import {ScrollableWindow} from "@/app/ui/FormantAdviceWindow";
+import {Modal} from "@/app/ui/FormantAdviceWindow";
 import {AnalyzedResult} from "@/app/stores/AnalyzedResultsStore";
 import {AnalyzedResultSelectionModal} from "@/app/ui/spectrogram/controls/SelectAnalyzedResult";
 import {SaveAnalyzedResult} from "@/app/ui/spectrogram/controls/SaveAnalyzedResult";
@@ -86,7 +86,8 @@ const HelperTextExtra = ({formant} : {formant: string}) => {
     return <></>
 }
 
-export const HelperTextExpanded = ({formant}:{formant: string}) => {
+export const HelperTextExpanded = ({formant}:{formant: string | null}) => {
+    if (!formant) return <></>;
     return <div>
         <HelperText formant={formant}/>
         <HelperTextExtra formant={formant}/>
@@ -272,7 +273,7 @@ const FormantDetailWindow = ({
 
     let formantColorV2 = getFormantColor(currentFormantValue, formant, averageFormantsData, comparisonType);
 
-    return (<ScrollableWindow header={word} onClose={onClose}>
+    return (<Modal header={word} onClose={onClose}>
         {averageData && averageData[comparisonType] ? (
             <div>
                 <h3 className={`font-semibold capitalize text-lg mb-2`}>{comparisonType} Comparison</h3>
@@ -312,7 +313,7 @@ const FormantDetailWindow = ({
                 </p>
             </>
         )}
-    </ScrollableWindow>)
+    </Modal>)
 };
 
 const getFormantKeys = (formants: FormantData): FormantKeys[] => {

@@ -5,7 +5,9 @@
     "build:worklet": "esbuild app/lib/audio-worklet/*.ts --bundle --outfile=public/audio/recorder-processor.js --format=esm --platform=browser --minify",
     "pre-build": "npm run build:worklet && npm run copy-wasm",
     "build": "npm run pre-build && next build",
-    "dev": "npm run pre-build && next dev --turbopack",
+    "build:web": "export NEXT_PUBLIC_TRANS_VOICE_PATH='/trans-voice-trainer' && npm run pre-build && next build",
+    "build:mobile": "export NEXT_PUBLIC_TRANS_VOICE_PATH='' && npm run build && npx cap sync android",
+    "dev": "export NEXT_PUBLIC_TRANS_VOICE_PATH='' && npm run pre-build && next dev --turbopack",
     "start": "npm run build && next start",
     "copy-wasm": "node scripts/copy-wasm.js",
     "predeploy": "npm run build",
@@ -13,6 +15,9 @@
   },
   "dependencies": {
     "@alexanderolsen/libsamplerate-js": "^2.1.2",
+    "@capacitor/android": "^7.2.0",
+    "@capacitor/cli": "^7.2.0",
+    "@capacitor/core": "^7.2.0",
     "@tailwindcss/forms": "^0.5.10",
     "autoprefixer": "10.4.20",
     "chroma.ts": "^1.0.10",
@@ -35,6 +40,7 @@
     "zustand": "^3.6.0"
   },
   "devDependencies": {
+    "@capacitor/filesystem": "^7.0.1",
     "@types/audioworklet": "^0.0.72",
     "@types/node": "22.10.7",
     "@types/react": "19.0.7",
