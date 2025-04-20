@@ -10,7 +10,7 @@
     "dev": "export NEXT_PUBLIC_TRANS_VOICE_PATH='' && npm run pre-build && next dev --turbopack",
     "start": "npm run build && next start",
     "copy-wasm": "node scripts/copy-wasm.js",
-    "predeploy": "npm run build",
+    "predeploy": "npm run build:web",
     "deploy": "gh-pages -d out -b gh-pages"
   },
   "dependencies": {
